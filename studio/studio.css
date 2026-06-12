@@ -113,6 +113,9 @@ body {
 .barra-fill { height: 100%; width: 0; background: var(--coral); transition: width .25s; }
 .fondos { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
 .fondos-label { font-size: 14px; color: var(--gris); }
+.fondos-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.fondo-tpl { background: #fff4f0; border-color: var(--coral); }
+.fondo-tpl::before { display: none; }
 .fondo-chip {
   display: flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 999px;
   border: 2px solid var(--linea); background: #fff; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;

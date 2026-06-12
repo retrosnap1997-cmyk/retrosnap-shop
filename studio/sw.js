@@ -5,7 +5,7 @@
 //  el navegador por separado la primera vez.
 // ============================================================
 
-const CACHE = "rs-studio-v1";
+const CACHE = "rs-studio-v2";
 const SHELL = [
   "./",
   "./index.html",
@@ -19,6 +19,7 @@ const SHELL = [
   "./js/codes.js",
   "./js/catalog.js",
   "./js/export.js",
+  "./js/templates.js",
 ];
 
 self.addEventListener("install", (e) => {

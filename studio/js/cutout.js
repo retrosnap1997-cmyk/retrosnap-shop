@@ -61,21 +61,45 @@ export async function recortar(blob, { onProgress, size = 1600 } = {}) {
   return { canvas, motor };
 }
 
-// Compone la prenda recortada (canvas RGBA) sobre un fondo y devuelve un Blob.
-//   fondo: "transparente" | "blanco" | "#rrggbb"
-export async function componer(canvasRecortado, { fondo = "blanco", size = 1600 } = {}) {
-  const out = document.createElement("canvas");
-  out.width = out.height = size;
-  const ctx = out.getContext("2d");
-
-  if (fondo !== "transparente") {
+// Dibuja el FONDO en un contexto: un color, transparente, o una imagen de
+// plantilla (modelo/escena) que cubre todo el cuadro.
+export function dibujarFondo(ctx, size, { fondo = "blanco", templateImg = null } = {}) {
+  if (templateImg) {
+    // "cover": la plantilla llena el cuadrado sin deformarse.
+    const r = Math.max(size / templateImg.width, size / templateImg.height);
+    const w = templateImg.width * r, h = templateImg.height * r;
+    ctx.drawImage(templateImg, (size - w) / 2, (size - h) / 2, w, h);
+  } else if (fondo !== "transparente") {
     ctx.fillStyle = fondo === "blanco" ? "#ffffff" : fondo;
     ctx.fillRect(0, 0, size, size);
   }
-  // El canvas recortado ya viene cuadrado y centrado a 'size'.
-  ctx.drawImage(canvasRecortado, 0, 0, size, size);
+}
 
-  const tipo = fondo === "transparente" ? "image/png" : "image/jpeg";
+// Coloca la prenda recortada. Si la plantilla define una "caja" (x,y,w,h en
+// 0..1) la prenda se ubica ahí; si no, ocupa todo el cuadro.
+export function colocarPrenda(ctx, size, canvasRecortado, caja = null) {
+  if (caja) {
+    ctx.drawImage(canvasRecortado, caja.x * size, caja.y * size, caja.w * size, caja.h * size);
+  } else {
+    ctx.drawImage(canvasRecortado, 0, 0, size, size);
+  }
+}
+
+// Compone la prenda recortada (canvas RGBA) sobre un fondo o plantilla y
+// devuelve un Blob listo para guardar/publicar.
+//   fondo: "transparente" | "blanco" | "#rrggbb"
+//   templateImg: HTMLImageElement de la plantilla (opcional)
+//   caja: ubicación de la prenda dentro de la plantilla (opcional)
+export async function componer(canvasRecortado, { fondo = "blanco", size = 1600, templateImg = null, caja = null } = {}) {
+  const out = document.createElement("canvas");
+  out.width = out.height = size;
+  const ctx = out.getContext("2d");
+  ctx.imageSmoothingQuality = "high";
+
+  dibujarFondo(ctx, size, { fondo, templateImg });
+  colocarPrenda(ctx, size, canvasRecortado, caja);
+
+  const tipo = (!templateImg && fondo === "transparente") ? "image/png" : "image/jpeg";
   return new Promise((res) => out.toBlob(res, tipo, 0.92));
 }
 

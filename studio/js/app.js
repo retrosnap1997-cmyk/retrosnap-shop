@@ -9,6 +9,7 @@ import * as Cam from "./camera.js";
 import * as Cut from "./cutout.js";
 import { generarCodigo } from "./codes.js";
 import { aCSV, aJSON, descargar } from "./export.js";
+import { TEMPLATES, templatePorId, precargarTemplates } from "./templates.js";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
@@ -18,9 +19,22 @@ const flujo = {
   modo: "colgada",
   capturaBlob: null,   // foto original
   recorteCanvas: null, // prenda recortada (transparente, cuadrada)
-  fondo: "blanco",
+  fondo: "blanco",     // "blanco" | "#rrggbb" | "transparente" | "tpl:<id>"
   motor: null,
 };
+
+// Imágenes de las plantillas precargadas (id → HTMLImageElement)
+let templatesImg = {};
+
+// Devuelve { templateImg, caja } si el fondo actual es una plantilla.
+function fondoActual() {
+  if (flujo.fondo.startsWith("tpl:")) {
+    const id = flujo.fondo.slice(4);
+    const t = templatePorId(id);
+    return { templateImg: templatesImg[id] || null, caja: t ? t.caja || null : null };
+  }
+  return { templateImg: null, caja: null };
+}
 
 // ---------- Navegación entre pantallas ----------
 function ir(pantalla) {
@@ -162,7 +176,7 @@ async function procesarRecorte() {
   }
 }
 
-// Dibuja la previsualización del recorte sobre el fondo elegido.
+// Dibuja la previsualización del recorte sobre el fondo/plantilla elegido.
 function pintarPreview() {
   if (!flujo.recorteCanvas) return;
   const canvas = $("#recorte-canvas");
@@ -170,13 +184,31 @@ function pintarPreview() {
   canvas.width = canvas.height = size;
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, size, size);
-  if (flujo.fondo === "transparente") {
-    pintarDamero(ctx, size);
+
+  const { templateImg, caja } = fondoActual();
+  if (!templateImg && flujo.fondo === "transparente") {
+    pintarDamero(ctx, size); // solo visual: marca la transparencia
   } else {
-    ctx.fillStyle = flujo.fondo === "blanco" ? "#ffffff" : flujo.fondo;
-    ctx.fillRect(0, 0, size, size);
+    Cut.dibujarFondo(ctx, size, { fondo: flujo.fondo, templateImg });
   }
-  ctx.drawImage(flujo.recorteCanvas, 0, 0, size, size);
+  Cut.colocarPrenda(ctx, size, flujo.recorteCanvas, caja);
+}
+
+// Construye los chips de fondo: primero las plantillas (si hay), luego colores.
+function renderFondos() {
+  const chipsTpl = TEMPLATES.map((t) =>
+    `<button class="fondo-chip fondo-tpl" data-fondo="tpl:${t.id}">🎨 ${esc(t.nombre)}</button>`
+  ).join("");
+  const chipsColor = [
+    ['blanco', '#fff', 'Blanco'],
+    ['#f6f1e7', '#f6f1e7', 'Arena'],
+    ['#176d6d', '#176d6d', 'Océano'],
+    ['transparente', 'transparent', 'PNG'],
+  ].map(([f, c, n]) =>
+    `<button class="fondo-chip" data-fondo="${f}" style="--c:${c}">${n}</button>`
+  ).join("");
+  $("#fondos-chips").innerHTML = chipsTpl + chipsColor;
+  sincronizarFondoChips();
 }
 
 function pintarDamero(ctx, size) {
@@ -210,7 +242,10 @@ function aplicarPlantillaFicha(catId) {
     $("#f-desc").dataset.auto = "1";
   }
   $("#f-talle").innerHTML = f.talles.map((t) => `<option>${esc(t)}</option>`).join("");
-  flujo.fondo = cat.fondo === "modelo" ? "blanco" : (cat.fondo === "arena" ? "#f6f1e7" : "blanco");
+  // Fondo sugerido por categoría: "modelo" usa la 1ª plantilla si hay alguna.
+  if (cat.fondo === "modelo") flujo.fondo = TEMPLATES.length ? "tpl:" + TEMPLATES[0].id : "blanco";
+  else if (cat.fondo === "arena") flujo.fondo = "#f6f1e7";
+  else flujo.fondo = "blanco";
   sincronizarFondoChips();
   pintarPreview();
 }
@@ -233,7 +268,8 @@ async function guardarPrenda() {
   $("#btn-guardar").disabled = true;
   try {
     const codigo = await generarCodigo(catId);
-    const fotoFinalBlob = await Cut.componer(flujo.recorteCanvas, { fondo: flujo.fondo });
+    const { templateImg, caja } = fondoActual();
+    const fotoFinalBlob = await Cut.componer(flujo.recorteCanvas, { fondo: flujo.fondo, templateImg, caja });
 
     const prenda = {
       codigo,
@@ -371,6 +407,8 @@ function bind() {
 // ============================================================
 async function init() {
   renderModos();
+  templatesImg = await precargarTemplates();
+  renderFondos();
   bind();
   await cargarAjustes();
   await renderStock();
