@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#176d6d">
+  <title>RetroSnap Studio</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+  <link rel="stylesheet" href="studio.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "@imgly/background-removal": "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- ============ TOPBAR ============ -->
+  <header class="topbar">
+    <span class="logo">RETRO<em>SNAP</em> · Studio</span>
+    <span class="online-dot" id="online-dot" title="Estado de conexión"></span>
+  </header>
+
+  <!-- ============ PANTALLA: STOCK ============ -->
+  <main class="screen activa" id="screen-stock">
+    <div class="stock-head">
+      <h1>Tu stock</h1>
+      <div class="stock-acciones">
+        <button class="btn-mini" id="btn-export">⬇️ Exportar</button>
+      </div>
+    </div>
+    <div class="stock-stats" id="stock-stats"></div>
+    <div class="stock-grid" id="stock-grid"></div>
+    <div class="stock-vacio" id="stock-vacio" hidden>
+      <p>📷</p>
+      <p>Todavía no cargaste prendas.<br>Tocá el botón de abajo para empezar.</p>
+    </div>
+  </main>
+
+  <!-- ============ PANTALLA: CAPTURAR ============ -->
+  <main class="screen" id="screen-capturar">
+    <div class="cam-wrap">
+      <video id="cam-video" playsinline muted></video>
+      <div class="cam-guia" id="cam-guia"></div>
+      <div class="cam-tip" id="cam-tip">Buena luz · fondo parejo · prenda centrada</div>
+    </div>
+    <div class="modos" id="modos"></div>
+    <div class="cam-barra">
+      <button class="btn-ghost" data-ir="stock">Cancelar</button>
+      <button class="shutter" id="btn-shutter" aria-label="Sacar foto"></button>
+      <span style="width:90px"></span>
+    </div>
+  </main>
+
+  <!-- ============ PANTALLA: RECORTE ============ -->
+  <main class="screen" id="screen-recorte">
+    <h1>Recorte</h1>
+    <div class="recorte-preview" id="recorte-preview">
+      <canvas id="recorte-canvas"></canvas>
+      <div class="recorte-cargando" id="recorte-cargando">
+        <div class="spinner"></div>
+        <p id="recorte-msg">Procesando…</p>
+        <div class="barra"><div class="barra-fill" id="recorte-barra"></div></div>
+      </div>
+    </div>
+    <div class="fondos">
+      <span class="fondos-label">Fondo:</span>
+      <button class="fondo-chip activa" data-fondo="blanco" style="--c:#fff">Blanco</button>
+      <button class="fondo-chip" data-fondo="#f6f1e7" style="--c:#f6f1e7">Arena</button>
+      <button class="fondo-chip" data-fondo="#176d6d" style="--c:#176d6d">Océano</button>
+      <button class="fondo-chip" data-fondo="transparente" style="--c:transparent">PNG</button>
+    </div>
+    <p class="motor-nota" id="motor-nota"></p>
+    <div class="acciones-fila">
+      <button class="btn-ghost" id="btn-rehacer">↺ Repetir foto</button>
+      <button class="btn-primario" id="btn-a-ficha">Continuar →</button>
+    </div>
+  </main>
+
+  <!-- ============ PANTALLA: FICHA ============ -->
+  <main class="screen" id="screen-ficha">
+    <h1>Ficha de la prenda</h1>
+    <div class="ficha-codigo" id="ficha-codigo">Código: se genera al guardar</div>
+
+    <label>Categoría
+      <select id="f-categoria"></select>
+    </label>
+    <label>Nombre
+      <input id="f-nombre" type="text" placeholder="Ej: Remera surf trip fade">
+    </label>
+    <div class="fila-2">
+      <label>Marca
+        <select id="f-marca"></select>
+      </label>
+      <label>Talle
+        <select id="f-talle"></select>
+      </label>
+    </div>
+    <div class="fila-2">
+      <label>Condición
+        <select id="f-condicion"></select>
+      </label>
+      <label>Precio (USD)
+        <input id="f-precio" type="number" inputmode="decimal" min="0">
+      </label>
+    </div>
+    <label>Descripción
+      <textarea id="f-desc" rows="3"></textarea>
+    </label>
+
+    <div class="acciones-fila">
+      <button class="btn-ghost" data-ir="recorte">← Volver</button>
+      <button class="btn-primario" id="btn-guardar">✓ Guardar en stock</button>
+    </div>
+  </main>
+
+  <!-- ============ PANTALLA: AJUSTES ============ -->
+  <main class="screen" id="screen-ajustes">
+    <h1>Ajustes</h1>
+    <label>Prefijo de código
+      <input id="a-prefijo" type="text" maxlength="6" placeholder="RS">
+    </label>
+    <p class="ajuste-nota">Los códigos quedan así: <code id="a-ejemplo">RS-TEE-0001</code></p>
+
+    <div class="ajuste-bloque">
+      <h3>Integraciones (próximas fases)</h3>
+      <p class="ajuste-nota">🎨 Canva — fondos con tus modelos · <em>Fase 2</em></p>
+      <p class="ajuste-nota">🛍️ Shopify — publicar productos · <em>Fase 3</em></p>
+      <p class="ajuste-nota">📲 Instagram — posteo automático · <em>Fase 4</em></p>
+    </div>
+
+    <div class="ajuste-bloque">
+      <h3>Datos</h3>
+      <button class="btn-mini" id="btn-export-2">⬇️ Exportar stock (CSV + JSON)</button>
+    </div>
+  </main>
+
+  <!-- ============ NAV INFERIOR ============ -->
+  <nav class="tabbar">
+    <button class="tab activa" data-ir="stock"><span>📦</span>Stock</button>
+    <button class="tab tab-cam" data-ir="capturar"><span>📷</span>Capturar</button>
+    <button class="tab" data-ir="ajustes"><span>⚙️</span>Ajustes</button>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+/* ============================================================
+   RetroSnap Studio — estilos. Pensado para celular (mobile-first).
+   Paleta consistente con la tienda RetroSnap.
+   ============================================================ */
+:root {
+  --arena: #f6f1e7;
+  --tinta: #1d2b2b;
+  --coral: #e8603c;
+  --oceano: #176d6d;
+  --sol: #f2b441;
+  --gris: #6c7a7a;
+  --linea: #e2dccf;
+  --radio: 16px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; }
+body {
+  font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+  background: var(--arena);
+  color: var(--tinta);
+  padding-bottom: calc(72px + var(--safe-bottom));
+}
+
+/* ---------- Topbar ---------- */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--oceano); color: #fff;
+  padding-top: calc(12px + env(safe-area-inset-top, 0px));
+}
+.logo { font-weight: 800; letter-spacing: .5px; font-size: 17px; }
+.logo em { color: var(--sol); font-style: normal; }
+.online-dot { width: 10px; height: 10px; border-radius: 50%; background: #6ee7a8; }
+.online-dot.off { background: #d96b5b; }
+
+/* ---------- Pantallas ---------- */
+.screen { display: none; padding: 16px; max-width: 680px; margin: 0 auto; }
+.screen.activa { display: block; }
+.screen h1 { font-size: 22px; margin: 4px 0 16px; }
+
+/* ---------- Botones ---------- */
+.btn-primario, .btn-ghost, .btn-mini {
+  font: inherit; font-weight: 700; border-radius: 999px;
+  padding: 13px 20px; border: none; cursor: pointer;
+}
+.btn-primario { background: var(--coral); color: #fff; }
+.btn-primario:disabled { opacity: .5; }
+.btn-ghost { background: transparent; color: var(--tinta); border: 2px solid var(--linea); }
+.btn-mini { background: #fff; border: 1px solid var(--linea); padding: 9px 14px; font-size: 14px; }
+.acciones-fila { display: flex; gap: 12px; margin-top: 20px; }
+.acciones-fila .btn-primario { flex: 1; }
+
+/* ---------- Stock ---------- */
+.stock-head { display: flex; align-items: center; justify-content: space-between; }
+.stock-stats { color: var(--gris); font-size: 14px; margin: 2px 0 14px; }
+.stock-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.prenda { position: relative; background: #fff; border-radius: var(--radio); overflow: hidden; border: 1px solid var(--linea); }
+.prenda-img { position: relative; aspect-ratio: 1; background: var(--arena); }
+.prenda-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sin-img { display: flex; align-items: center; justify-content: center; height: 100%; font-size: 48px; }
+.prenda-cod {
+  position: absolute; left: 8px; bottom: 8px;
+  background: rgba(29,43,43,.85); color: #fff; font-size: 11px; font-weight: 700;
+  padding: 3px 8px; border-radius: 999px; letter-spacing: .5px;
+}
+.prenda-info { padding: 10px; display: flex; flex-direction: column; gap: 2px; }
+.prenda-info strong { font-size: 14px; line-height: 1.2; }
+.prenda-info span { font-size: 12px; color: var(--gris); }
+.prenda-precio { font-weight: 800; color: var(--coral) !important; font-size: 15px !important; }
+.prenda-del { position: absolute; top: 6px; right: 6px; background: rgba(255,255,255,.9); border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 15px; cursor: pointer; }
+.stock-vacio { text-align: center; color: var(--gris); margin-top: 60px; }
+.stock-vacio p:first-child { font-size: 54px; margin: 0; }
+
+/* ---------- Cámara ---------- */
+.cam-wrap { position: relative; border-radius: var(--radio); overflow: hidden; background: #000; aspect-ratio: 3/4; }
+#cam-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cam-guia { position: absolute; inset: 0; pointer-events: none; }
+.cam-guia::before {
+  content: ""; position: absolute; border: 2px dashed rgba(255,255,255,.85); border-radius: 10px;
+}
+.guia-cuadrada::before { inset: 12% 8%; aspect-ratio: 1; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 80%; height: auto; }
+.guia-vertical::before { top: 6%; bottom: 6%; left: 24%; right: 24%; }
+.cam-tip {
+  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,.55); color: #fff; font-size: 12px; padding: 5px 12px; border-radius: 999px; white-space: nowrap;
+}
+.modos { display: flex; gap: 8px; overflow-x: auto; padding: 14px 2px; }
+.modo-chip {
+  flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  background: #fff; border: 2px solid var(--linea); border-radius: 14px;
+  padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--tinta);
+}
+.modo-chip span { font-size: 20px; }
+.modo-chip.activa { border-color: var(--coral); background: #fff4f0; }
+.cam-barra { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+.shutter {
+  width: 74px; height: 74px; border-radius: 50%; background: #fff;
+  border: 5px solid var(--coral); cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.2);
+}
+.shutter:active { transform: scale(.94); }
+
+/* ---------- Recorte ---------- */
+.recorte-preview { position: relative; border-radius: var(--radio); overflow: hidden; border: 1px solid var(--linea); background: #fff; aspect-ratio: 1; }
+#recorte-canvas { width: 100%; height: 100%; display: block; }
+.recorte-cargando { position: absolute; inset: 0; background: rgba(255,255,255,.92); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; }
+.spinner { width: 42px; height: 42px; border: 4px solid var(--linea); border-top-color: var(--coral); border-radius: 50%; animation: girar .9s linear infinite; }
+@keyframes girar { to { transform: rotate(360deg); } }
+#recorte-msg { font-weight: 600; margin: 0; text-align: center; }
+.barra { width: 80%; height: 8px; background: var(--linea); border-radius: 999px; overflow: hidden; }
+.barra-fill { height: 100%; width: 0; background: var(--coral); transition: width .25s; }
+.fondos { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.fondos-label { font-size: 14px; color: var(--gris); }
+.fondo-chip {
+  display: flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 999px;
+  border: 2px solid var(--linea); background: #fff; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.fondo-chip::before { content: ""; width: 14px; height: 14px; border-radius: 50%; background: var(--c); border: 1px solid var(--linea); }
+.fondo-chip.activa { border-color: var(--coral); }
+.motor-nota { font-size: 13px; color: var(--gris); margin: 12px 0 0; }
+
+/* ---------- Ficha ---------- */
+.ficha-codigo { background: var(--oceano); color: #fff; font-weight: 700; padding: 10px 14px; border-radius: 12px; margin-bottom: 16px; font-size: 14px; }
+label { display: block; font-size: 13px; font-weight: 600; color: var(--gris); margin-bottom: 14px; }
+input, select, textarea {
+  width: 100%; font: inherit; color: var(--tinta); margin-top: 5px;
+  padding: 12px; border: 1.5px solid var(--linea); border-radius: 12px; background: #fff;
+}
+textarea { resize: vertical; }
+.fila-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ---------- Ajustes ---------- */
+.ajuste-nota { font-size: 13px; color: var(--gris); margin: 6px 0; }
+.ajuste-nota code { background: #fff; padding: 2px 6px; border-radius: 6px; border: 1px solid var(--linea); }
+.ajuste-bloque { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--linea); }
+.ajuste-bloque h3 { margin: 0 0 8px; font-size: 15px; }
+
+/* ---------- Tabbar ---------- */
+.tabbar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 30;
+  display: flex; background: #fff; border-top: 1px solid var(--linea);
+  padding-bottom: var(--safe-bottom);
+}
+.tab {
+  flex: 1; background: none; border: none; cursor: pointer; color: var(--gris);
+  font: inherit; font-size: 11px; font-weight: 600; padding: 10px 0;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.tab span { font-size: 22px; }
+.tab.activa { color: var(--coral); }
+.tab-cam span { transform: scale(1.15); }
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed; left: 50%; bottom: calc(86px + var(--safe-bottom)); transform: translateX(-50%) translateY(20px);
+  background: var(--tinta); color: #fff; padding: 12px 20px; border-radius: 999px;
+  font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: .25s; z-index: 50; max-width: 90%;
+}
+.toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
