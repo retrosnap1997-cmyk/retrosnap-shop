@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RetroSnap · Surf Goodies</title>
+  <meta name="description" content="Surf wear retro y de segunda vuelta en Santa Teresa, Costa Rica. Tablas, ropa, racks para moto y más.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Barra de anuncio (editá el texto acá directo) -->
+  <div class="anuncio">🌊 Segunda vida para tu surf wear · <span>Retiro en Santa Teresa o envíos a todo CR</span> 🌊</div>
+
+  <!-- ============ HEADER ============ -->
+  <header>
+    <div class="header-inner">
+      <a href="#" class="logo" id="logo-texto">RETRO<em>SNAP</em></a>
+
+      <nav class="principal">
+        <div>
+          <button class="nav-btn" data-dd="dd-shop">Shop ▾</button>
+          <div class="dropdown" id="dd-shop"></div>
+        </div>
+        <div>
+          <button class="nav-btn" data-dd="dd-marcas">Marcas ▾</button>
+          <div class="dropdown" id="dd-marcas"></div>
+        </div>
+        <div><a class="nav-btn" style="display:inline-block" href="#nosotros">Nosotros</a></div>
+        <div><a class="nav-btn" style="display:inline-block" href="#contacto">Contacto</a></div>
+      </nav>
+
+      <div class="header-acciones">
+        <div class="buscador">
+          🔍&nbsp;<input type="text" id="buscador-input" placeholder="Buscar..." aria-label="Buscar productos">
+        </div>
+        <button class="icono-btn" id="btn-cart" aria-label="Abrir carrito">
+          🛒<span class="cart-count" id="cart-count" style="display:none">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <div class="hero">
+    <div class="contenedor">
+      <h1 id="hero-titulo">Surf wear con segunda vida</h1>
+      <p id="hero-texto"></p>
+      <a href="#tienda" class="btn claro" id="hero-boton">Ver lo nuevo</a>
+    </div>
+    <svg class="ola" viewBox="0 0 1440 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,40 C240,80 480,0 720,30 C960,60 1200,10 1440,45 L1440,70 L0,70 Z" fill="#f6f1e7"/>
+    </svg>
+  </div>
+
+  <!-- ============ CATEGORÍAS ============ -->
+  <section>
+    <div class="contenedor">
+      <h2 class="seccion-titulo">Categorías</h2>
+      <p class="seccion-sub">Tocá una categoría para filtrar la tienda.</p>
+      <div class="cats" id="grid-cats"></div>
+    </div>
+  </section>
+
+  <!-- ============ LO NUEVO ============ -->
+  <section>
+    <div class="contenedor">
+      <h2 class="seccion-titulo">Lo nuevo 🔥</h2>
+      <p class="seccion-sub">Últimas piezas rescatadas, una sola de cada una.</p>
+      <div class="grid-productos" id="grid-novedades"></div>
+    </div>
+  </section>
+
+  <!-- ============ BANNER ECO ============ -->
+  <section class="eco">
+    <div class="contenedor">
+      <h2 id="eco-titulo"></h2>
+      <p id="eco-texto"></p>
+      <div class="badges">
+        <span class="badge">♻️ Segunda vida</span>
+        <span class="badge">🤙 Curado a mano</span>
+        <span class="badge">📦 Packaging reutilizado</span>
+        <span class="badge">🌴 Hecho en Santa Teresa</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TIENDA COMPLETA ============ -->
+  <section id="tienda">
+    <div class="contenedor">
+      <h2 class="seccion-titulo" id="tienda-titulo">Toda la tienda</h2>
+      <p class="seccion-sub">Filtrá por marca o buscá lo que necesitás.</p>
+      <div class="marcas-strip" id="marcas-strip" style="margin-bottom:24px"></div>
+      <div class="grid-productos" id="grid-tienda"></div>
+    </div>
+  </section>
+
+  <!-- ============ BANNER MOTO ============ -->
+  <section class="moto" id="banner-moto">
+    <div class="contenedor moto-inner">
+      <div>
+        <h2 id="moto-titulo"></h2>
+        <p id="moto-texto"></p>
+      </div>
+      <a class="btn" id="moto-boton" href="#" target="_blank" rel="noopener"></a>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer id="contacto">
+    <div class="contenedor">
+      <div class="footer-grid">
+        <div id="nosotros">
+          <h3 id="footer-nombre">RetroSnap</h3>
+          <p>Tienda de surf en Santa Teresa: ropa retro de segunda vuelta, tablas, racks porta-tablas para moto y alquiler de moto. Editá este texto en index.html.</p>
+        </div>
+        <div>
+          <h3>Contacto</h3>
+          <ul>
+            <li><span id="footer-direccion"></span></li>
+            <li><span id="footer-email"></span></li>
+            <li><span id="footer-horario"></span></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Ayuda</h3>
+          <ul>
+            <li><a href="#tienda">Cómo comprar</a></li>
+            <li><a href="#banner-moto">Alquiler de moto</a></li>
+            <li><a href="#tienda">Vendé tu tabla</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Seguinos</h3>
+          <ul id="footer-redes"></ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="anio"></span> RetroSnap Surf Goodies · Santa Teresa, Costa Rica</span>
+        <span>Hecho con 🤙 y olas</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ CARRITO (drawer) ============ -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="drawer" id="drawer" aria-label="Carrito de compras">
+    <div class="drawer-head">
+      <h2>Tu carrito</h2>
+      <button class="icono-btn" id="drawer-cerrar" aria-label="Cerrar carrito">✕</button>
+    </div>
+    <div class="drawer-items" id="drawer-items"></div>
+    <div class="drawer-foot">
+      <div class="drawer-total"><span>Total</span><span id="drawer-total">$0</span></div>
+      <button class="btn-checkout" id="btn-checkout">Pedir por WhatsApp 💬</button>
+    </div>
+  </aside>
+
+  <!-- ============ MODAL DE PRODUCTO ============ -->
+  <div class="modal" id="modal">
+    <div class="modal-caja">
+      <button class="modal-cerrar" id="modal-cerrar" aria-label="Cerrar">✕</button>
+      <div class="modal-img"><img id="modal-img" src="" alt=""></div>
+      <div class="modal-info">
+        <span class="card-marca" id="modal-marca"></span>
+        <h2 id="modal-nombre"></h2>
+        <span class="precio" id="modal-precio"></span>
+        <p id="modal-desc"></p>
+        <p class="modal-meta" id="modal-meta"></p>
+        <button class="btn" id="modal-add" style="border:none">Agregar al carrito</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="config.js"></script>
+  <script src="products.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
