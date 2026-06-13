@@ -10,6 +10,7 @@ import * as Cut from "./cutout.js";
 import { generarCodigo } from "./codes.js";
 import { aCSV, aJSON, descargar } from "./export.js";
 import { TEMPLATES, templatePorId, precargarTemplates } from "./templates.js";
+import * as Cloud from "./cloud.js";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
@@ -66,24 +67,40 @@ const dinero = (n) => "$" + n;
 //  STOCK
 // ============================================================
 async function renderStock() {
-  const prendas = await DB.listarPrendas();
+  const locales = await DB.listarPrendas();
+  let prendas = locales;
+
+  // Si la nube está configurada y hay señal, ella es la fuente de verdad.
+  if (navigator.onLine && await Cloud.estaConfigurada()) {
+    try {
+      const remotas = await Cloud.bajarPrendas();
+      const enRemoto = new Set(remotas.map((p) => p.codigo));
+      for (const p of remotas) await DB.guardarPrenda(p); // cachear para offline
+      const pendientes = locales.filter((p) => p.pendienteSync && !enRemoto.has(p.codigo));
+      prendas = [...pendientes, ...remotas];
+    } catch (e) {
+      console.warn("[stock] no pude leer la nube, muestro lo local:", e);
+    }
+  }
+
   const grid = $("#stock-grid");
   const vacio = $("#stock-vacio");
   const stats = $("#stock-stats");
 
   vacio.hidden = prendas.length > 0;
   stats.textContent = prendas.length
-    ? `${prendas.length} prenda${prendas.length > 1 ? "s" : ""} · ${prendas.filter(p => p.estado === "publicada").length} publicadas`
+    ? `${prendas.length} prenda${prendas.length > 1 ? "s" : ""} · ${prendas.filter(p => p.pendienteSync).length} sin subir`
     : "";
 
   grid.innerHTML = prendas.map((p) => {
-    const url = p.fotoFinalBlob ? URL.createObjectURL(p.fotoFinalBlob) : "";
+    const url = imgURLDe(p);
     const cat = categoriaPorId(p.categoria);
     return `
       <article class="prenda" data-codigo="${p.codigo}">
         <div class="prenda-img">
-          ${url ? `<img src="${url}" alt="${esc(p.nombre)}">` : `<div class="sin-img">${cat ? cat.emoji : "📦"}</div>`}
+          ${url ? `<img src="${url}" alt="${esc(p.nombre)}" loading="lazy">` : `<div class="sin-img">${cat ? cat.emoji : "📦"}</div>`}
           <span class="prenda-cod">${esc(p.codigo)}</span>
+          ${p.pendienteSync ? `<span class="prenda-sync" title="Pendiente de subir a la nube">⏳</span>` : ""}
         </div>
         <div class="prenda-info">
           <strong>${esc(p.nombre || "(sin nombre)")}</strong>
@@ -99,6 +116,13 @@ function esc(s) {
   const d = document.createElement("div");
   d.textContent = s == null ? "" : s;
   return d.innerHTML;
+}
+
+// URL de imagen de una prenda: la de la nube si existe, si no el blob local.
+function imgURLDe(p) {
+  if (p.fotoFinalURL) return p.fotoFinalURL;
+  if (p.fotoFinalBlob) return URL.createObjectURL(p.fotoFinalBlob);
+  return "";
 }
 
 // ============================================================
@@ -290,7 +314,23 @@ async function guardarPrenda() {
       instagramId: null,
     };
     await DB.guardarPrenda(prenda);
-    toast("Guardada: " + codigo + " 🤙");
+
+    // Subir a la nube (si está configurada). Si falla, queda pendiente.
+    if (await Cloud.estaConfigurada()) {
+      try {
+        prenda.fotoFinalURL = await Cloud.subirPrenda(prenda);
+        prenda.pendienteSync = false;
+        await DB.guardarPrenda(prenda);
+        toast("Guardada y subida: " + codigo + " ☁️");
+      } catch (e) {
+        console.warn("[guardar] la nube falló, queda pendiente:", e);
+        prenda.pendienteSync = true;
+        await DB.guardarPrenda(prenda);
+        toast("Guardada local: " + codigo + " — se sube al sincronizar");
+      }
+    } else {
+      toast("Guardada: " + codigo + " 🤙");
+    }
     resetFlujo();
     ir("stock");
   } catch (e) {
@@ -322,6 +362,41 @@ async function cargarAjustes() {
   const prefijo = await DB.getConfig("prefijo", PREFIJO_DEFECTO);
   $("#a-prefijo").value = prefijo;
   $("#a-ejemplo").textContent = `${prefijo}-TEE-0001`;
+
+  const { url, key } = await Cloud.configActual();
+  $("#a-cloud-url").value = url;
+  $("#a-cloud-key").value = key;
+  await actualizarEstadoNube();
+}
+
+// ============================================================
+//  NUBE
+// ============================================================
+async function actualizarEstadoNube() {
+  const el = $("#cloud-estado");
+  if (!el) return;
+  el.textContent = (await Cloud.estaConfigurada())
+    ? "Estado: configurada ☁️ — el stock se sincroniza con la nube."
+    : "Estado: sin configurar (el stock vive solo en este teléfono).";
+}
+
+async function sincronizar() {
+  if (!(await Cloud.estaConfigurada())) { toast("Configurá la nube primero."); return; }
+  toast("Sincronizando…");
+  try {
+    // Subir lo que quedó pendiente (sin señal o por error).
+    const locales = await DB.listarPrendas();
+    for (const p of locales.filter((x) => x.pendienteSync)) {
+      p.fotoFinalURL = await Cloud.subirPrenda(p);
+      p.pendienteSync = false;
+      await DB.guardarPrenda(p);
+    }
+    await renderStock();
+    toast("Stock sincronizado ☁️");
+  } catch (e) {
+    console.error(e);
+    toast("Error al sincronizar: " + e.message);
+  }
 }
 
 // ============================================================
@@ -378,7 +453,12 @@ function bind() {
     const del = e.target.closest("[data-del]");
     if (!del) return;
     if (confirm("¿Borrar esta prenda del stock?")) {
-      await DB.borrarPrenda(del.dataset.del);
+      const codigo = del.dataset.del;
+      await DB.borrarPrenda(codigo);
+      if (await Cloud.estaConfigurada()) {
+        try { await Cloud.borrarPrendaCloud(codigo); }
+        catch (e) { console.warn("[borrar] nube:", e); }
+      }
       renderStock();
     }
   });
@@ -386,6 +466,20 @@ function bind() {
   // Export
   $("#btn-export").addEventListener("click", exportar);
   $("#btn-export-2").addEventListener("click", exportar);
+
+  // Nube
+  $("#btn-cloud-probar").addEventListener("click", async () => {
+    await Cloud.guardarConfig($("#a-cloud-url").value, $("#a-cloud-key").value);
+    await actualizarEstadoNube();
+    toast("Probando conexión…");
+    try { await Cloud.probar(); toast("Conexión OK ✅"); }
+    catch (e) { toast("Falló: " + e.message); }
+  });
+  $("#btn-cloud-sync").addEventListener("click", async () => {
+    await Cloud.guardarConfig($("#a-cloud-url").value, $("#a-cloud-key").value);
+    await actualizarEstadoNube();
+    sincronizar();
+  });
 
   // Ajustes: prefijo
   $("#a-prefijo").addEventListener("input", async (e) => {

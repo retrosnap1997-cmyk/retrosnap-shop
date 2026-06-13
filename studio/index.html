@@ -11,7 +11,8 @@
   <script type="importmap">
   {
     "imports": {
-      "@imgly/background-removal": "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm"
+      "@imgly/background-removal": "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm",
+      "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"
     }
   }
   </script>
@@ -121,6 +122,22 @@
       <input id="a-prefijo" type="text" maxlength="6" placeholder="RS">
     </label>
     <p class="ajuste-nota">Los códigos quedan así: <code id="a-ejemplo">RS-TEE-0001</code></p>
+
+    <div class="ajuste-bloque">
+      <h3>☁️ Nube (control de stock)</h3>
+      <p class="ajuste-nota">Sincroniza tu stock para verlo y controlarlo desde cualquier dispositivo. Pegá los datos de tu proyecto Supabase (ver <code>CONFIG-NUBE.md</code>).</p>
+      <label>URL del proyecto
+        <input id="a-cloud-url" type="url" placeholder="https://xxxx.supabase.co" autocomplete="off">
+      </label>
+      <label>Clave pública (anon)
+        <input id="a-cloud-key" type="text" placeholder="eyJhbGci..." autocomplete="off">
+      </label>
+      <div class="acciones-fila" style="margin-top:6px">
+        <button class="btn-mini" id="btn-cloud-probar">🔌 Probar conexión</button>
+        <button class="btn-mini" id="btn-cloud-sync">🔄 Sincronizar ahora</button>
+      </div>
+      <p class="ajuste-nota" id="cloud-estado">Estado: sin configurar (el stock vive solo en este teléfono).</p>
+    </div>
 
     <div class="ajuste-bloque">
       <h3>Integraciones (próximas fases)</h3>

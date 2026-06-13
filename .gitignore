@@ -2,3 +2,6 @@
 .DS_Store
 Thumbs.db
 *.log
+
+# Config con claves (no se sube al repo)
+studio/js/cloud-config.js
