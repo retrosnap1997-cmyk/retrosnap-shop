@@ -1,14 +1,16 @@
 {
   "name": "RetroSnap Studio",
-  "short_name": "RS Studio",
+  "short_name": "RetroSnap",
   "description": "Captura, recorta y cataloga tu stock de ropa retro.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f6f1e7",
-  "theme_color": "#176d6d",
+  "background_color": "#0F0A0A",
+  "theme_color": "#0F0A0A",
   "icons": [
-    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

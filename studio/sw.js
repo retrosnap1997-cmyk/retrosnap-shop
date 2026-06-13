@@ -5,13 +5,17 @@
 //  el navegador por separado la primera vez.
 // ============================================================
 
-const CACHE = "rs-studio-v3";
+const CACHE = "rs-studio-v4";
 const SHELL = [
   "./",
   "./index.html",
   "./studio.css",
   "./manifest.webmanifest",
   "./icons/icon.svg",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png",
+  "./icons/icon-maskable-512.png",
+  "./icons/apple-touch-icon.png",
   "./js/app.js",
   "./js/db.js",
   "./js/camera.js",
