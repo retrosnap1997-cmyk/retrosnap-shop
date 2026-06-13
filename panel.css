@@ -39,32 +39,31 @@ body {
   background-image: radial-gradient(rgba(255,255,255,.35) 1px, transparent 1.4px);
   background-size: 14px 14px;
 }
-.hero-top {
-  position: relative; z-index: 2;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+.hero-centro { position: relative; z-index: 2; text-align: center; padding: 18px 0 64px; }
+
+/* Logo real montado como sticker (placa blanca con sombra) */
+.logo-plate {
+  position: relative;
+  display: inline-block;
+  width: min(82%, 360px);
+  background: #fff;
+  border-radius: 24px;
+  padding: 14px 18px;
+  box-shadow: 0 14px 30px rgba(0,0,0,.28);
+  transform: rotate(-1.8deg);
 }
-.marca-icono { width: 52px; height: 52px; filter: drop-shadow(0 4px 10px rgba(0,0,0,.25)); }
+.logo-plate img { width: 100%; height: auto; display: block; }
 .sticker {
+  position: absolute; right: -14px; bottom: -12px;
   font-family: "Permanent Marker", cursive;
   background: var(--sol); color: var(--tinta);
-  padding: 6px 12px; border-radius: 6px;
-  transform: rotate(3deg);
-  font-size: 12px; letter-spacing: .5px;
+  padding: 5px 11px; border-radius: 6px;
+  transform: rotate(5deg);
+  font-size: 11px; letter-spacing: .5px;
   box-shadow: 0 3px 0 rgba(0,0,0,.25);
   border: 2px solid var(--tinta);
 }
-
-.hero-centro { position: relative; z-index: 2; text-align: center; padding: 26px 0 60px; }
-.wordmark {
-  font-family: "Archivo Black", sans-serif;
-  font-size: clamp(48px, 16vw, 96px);
-  line-height: .92;
-  margin: 0;
-  letter-spacing: -1px;
-  text-shadow: 0 4px 0 rgba(0,0,0,.18);
-}
-.wordmark span { color: var(--sol); }
-.eslogan { margin: 12px 0 0; font-weight: 600; opacity: .92; font-size: clamp(13px, 3.6vw, 16px); }
+.eslogan { margin: 20px 0 0; font-weight: 700; opacity: .95; font-size: clamp(13px, 3.6vw, 16px); letter-spacing: .5px; }
 .grito {
   font-family: "Permanent Marker", cursive;
   margin: 14px 0 0; color: var(--coral);
