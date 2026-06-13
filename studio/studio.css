@@ -3,13 +3,14 @@
    Paleta consistente con la tienda RetroSnap.
    ============================================================ */
 :root {
-  --arena: #f6f1e7;
-  --tinta: #1d2b2b;
-  --coral: #e8603c;
-  --oceano: #176d6d;
-  --sol: #f2b441;
-  --gris: #6c7a7a;
-  --linea: #e2dccf;
+  /* Paleta de marca RetroSnap: blanco · negro · rojo (del logo) */
+  --arena: #f4f1ec;     /* fondo: blanco cálido */
+  --tinta: #0F0A0A;     /* negro de marca (texto) */
+  --coral: #B2382F;     /* rojo de marca (acento principal) */
+  --oceano: #0F0A0A;    /* negro (topbar / encabezados) */
+  --sol: #B2382F;       /* rojo (acentos secundarios) */
+  --gris: #8a8584;
+  --linea: #e6e1da;
   --radio: 16px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -29,6 +30,7 @@ body {
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 16px;
   background: var(--oceano); color: #fff;
+  border-bottom: 3px solid var(--coral);
   padding-top: calc(12px + env(safe-area-inset-top, 0px));
 }
 .logo { font-weight: 800; letter-spacing: .5px; font-size: 17px; }
@@ -63,7 +65,7 @@ body {
 .sin-img { display: flex; align-items: center; justify-content: center; height: 100%; font-size: 48px; }
 .prenda-cod {
   position: absolute; left: 8px; bottom: 8px;
-  background: rgba(29,43,43,.85); color: #fff; font-size: 11px; font-weight: 700;
+  background: rgba(15,10,10,.85); color: #fff; font-size: 11px; font-weight: 700;
   padding: 3px 8px; border-radius: 999px; letter-spacing: .5px;
 }
 .prenda-info { padding: 10px; display: flex; flex-direction: column; gap: 2px; }
@@ -71,7 +73,7 @@ body {
 .prenda-info span { font-size: 12px; color: var(--gris); }
 .prenda-precio { font-weight: 800; color: var(--coral) !important; font-size: 15px !important; }
 .prenda-del { position: absolute; top: 6px; right: 6px; background: rgba(255,255,255,.9); border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 15px; cursor: pointer; }
-.prenda-sync { position: absolute; top: 8px; left: 8px; background: rgba(242,180,65,.95); border-radius: 999px; padding: 2px 7px; font-size: 12px; }
+.prenda-sync { position: absolute; top: 8px; left: 8px; background: rgba(15,10,10,.85); border-radius: 999px; padding: 2px 7px; font-size: 12px; }
 .stock-vacio { text-align: center; color: var(--gris); margin-top: 60px; }
 .stock-vacio p:first-child { font-size: 54px; margin: 0; }
 

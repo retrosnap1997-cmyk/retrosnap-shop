@@ -3,12 +3,12 @@
    ============================================================ */
 
 :root {
-  /* Paleta — cambiá estos valores para retematizar todo el sitio */
-  --arena: #f6f1e7;      /* fondo general */
-  --tinta: #1d1d1b;      /* texto principal */
-  --coral: #e8603c;      /* acento principal (botones, tags) */
-  --oceano: #176d6d;     /* acento secundario */
-  --sol: #f2b441;        /* detalle cálido */
+  /* Paleta de marca RetroSnap: blanco · negro · rojo (del logo) */
+  --arena: #f4f1ec;      /* fondo general (blanco cálido) */
+  --tinta: #0F0A0A;      /* negro de marca (texto) */
+  --coral: #B2382F;      /* rojo de marca (botones, tags) */
+  --oceano: #0F0A0A;     /* negro (acento secundario) */
+  --sol: #B2382F;        /* rojo (detalle) */
   --blanco: #ffffff;
   --gris: #6f6a60;
 
@@ -152,9 +152,9 @@ nav.principal > div { position: relative; }
 /* ---------- Hero ---------- */
 .hero {
   background:
-    radial-gradient(1200px 500px at 80% -10%, rgba(242,180,65,.55), transparent 60%),
-    radial-gradient(900px 500px at 10% 110%, rgba(23,109,109,.45), transparent 60%),
-    linear-gradient(160deg, var(--coral), #c44a2c 70%);
+    radial-gradient(1200px 500px at 80% -10%, rgba(255,255,255,.16), transparent 60%),
+    radial-gradient(900px 500px at 10% 110%, rgba(15,10,10,.5), transparent 60%),
+    linear-gradient(160deg, var(--coral), #8A2A23 70%);
   color: var(--blanco);
   padding: 90px 0 100px;
   position: relative;
@@ -333,6 +333,7 @@ section { padding: 64px 0; }
 /* ---------- Banner moto ---------- */
 .moto {
   background: var(--sol);
+  color: var(--blanco);
   border-top: 2px solid var(--tinta);
   border-bottom: 2px solid var(--tinta);
 }
