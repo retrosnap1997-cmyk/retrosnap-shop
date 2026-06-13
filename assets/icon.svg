@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#176d6d"/>
+  <!-- ola -->
+  <path d="M40 360 C120 300 180 410 270 360 C340 322 400 360 472 332 L472 472 L40 472 Z" fill="#0f4f4f"/>
+  <path d="M40 380 C120 320 180 430 270 380 C340 342 400 380 472 352" fill="none" stroke="#f6f1e7" stroke-width="10" stroke-linecap="round"/>
+  <!-- camara -->
+  <circle cx="256" cy="210" r="104" fill="none" stroke="#f6f1e7" stroke-width="24"/>
+  <circle cx="256" cy="210" r="52" fill="#e8603c"/>
+  <rect x="150" y="96" width="212" height="34" rx="17" fill="#f2b441"/>
+  <rect x="196" y="70" width="120" height="34" rx="14" fill="#f6f1e7"/>
+</svg>

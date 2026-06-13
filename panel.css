@@ -1,0 +1,148 @@
+/* ============================================================
+   RetroSnap — Panel de entrada (front panel)
+   Estilo retro-surf con onda punk rock. Mobile-first.
+   ============================================================ */
+:root {
+  --arena: #f6f1e7;
+  --tinta: #1d2b2b;
+  --coral: #e8603c;
+  --oceano: #176d6d;
+  --oceano-hondo: #0f4f4f;
+  --sol: #f2b441;
+  --gris: #6c7a7a;
+  --linea: #e2dccf;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; }
+body {
+  font-family: "Inter", -apple-system, system-ui, sans-serif;
+  background: var(--arena);
+  color: var(--tinta);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- HERO ---------- */
+.hero {
+  position: relative;
+  background: linear-gradient(160deg, #1c8080 0%, var(--oceano) 55%, var(--oceano-hondo) 100%);
+  color: #fff;
+  padding: calc(20px + var(--safe-top)) 20px 0;
+  overflow: hidden;
+}
+.grano {
+  position: absolute; inset: 0; pointer-events: none; opacity: .25;
+  background-image: radial-gradient(rgba(255,255,255,.35) 1px, transparent 1.4px);
+  background-size: 14px 14px;
+}
+.hero-top {
+  position: relative; z-index: 2;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.marca-icono { width: 52px; height: 52px; filter: drop-shadow(0 4px 10px rgba(0,0,0,.25)); }
+.sticker {
+  font-family: "Permanent Marker", cursive;
+  background: var(--sol); color: var(--tinta);
+  padding: 6px 12px; border-radius: 6px;
+  transform: rotate(3deg);
+  font-size: 12px; letter-spacing: .5px;
+  box-shadow: 0 3px 0 rgba(0,0,0,.25);
+  border: 2px solid var(--tinta);
+}
+
+.hero-centro { position: relative; z-index: 2; text-align: center; padding: 26px 0 60px; }
+.wordmark {
+  font-family: "Archivo Black", sans-serif;
+  font-size: clamp(48px, 16vw, 96px);
+  line-height: .92;
+  margin: 0;
+  letter-spacing: -1px;
+  text-shadow: 0 4px 0 rgba(0,0,0,.18);
+}
+.wordmark span { color: var(--sol); }
+.eslogan { margin: 12px 0 0; font-weight: 600; opacity: .92; font-size: clamp(13px, 3.6vw, 16px); }
+.grito {
+  font-family: "Permanent Marker", cursive;
+  margin: 14px 0 0; color: var(--coral);
+  background: #fff; display: inline-block;
+  padding: 4px 16px; border-radius: 999px;
+  transform: rotate(-2deg);
+  font-size: clamp(16px, 4.5vw, 22px);
+  box-shadow: 0 4px 0 rgba(0,0,0,.2);
+}
+
+.ola { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 130px; display: block; }
+
+/* ---------- PANEL ---------- */
+.panel {
+  flex: 1;
+  width: 100%; max-width: 760px;
+  margin: 0 auto; padding: 28px 18px 10px;
+}
+
+.cta-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+
+.card {
+  position: relative;
+  display: flex; align-items: center; gap: 16px;
+  padding: 22px;
+  border-radius: 22px;
+  text-decoration: none; color: #fff;
+  box-shadow: 0 10px 24px rgba(0,0,0,.14);
+  border: 3px solid rgba(0,0,0,.12);
+  transition: transform .12s ease, box-shadow .12s ease;
+  overflow: hidden;
+}
+.card:active { transform: translateY(2px) scale(.99); box-shadow: 0 6px 14px rgba(0,0,0,.16); }
+.card-studio { background: linear-gradient(135deg, #f07a52, var(--coral)); }
+.card-tienda { background: linear-gradient(135deg, #1c8080, var(--oceano)); }
+.card-icono {
+  flex: 0 0 auto;
+  width: 64px; height: 64px; border-radius: 16px;
+  background: rgba(255,255,255,.18);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 34px;
+}
+.card-texto { flex: 1; }
+.card-texto h2 {
+  font-family: "Archivo Black", sans-serif;
+  margin: 0 0 4px; font-size: 26px; letter-spacing: -.5px;
+}
+.card-texto p { margin: 0; font-size: 14px; line-height: 1.35; opacity: .95; }
+.card-flecha {
+  position: absolute; right: 18px; bottom: 14px;
+  font-weight: 700; font-size: 14px;
+  background: rgba(255,255,255,.22); padding: 5px 12px; border-radius: 999px;
+}
+
+/* ---------- Próximamente ---------- */
+.prox { margin-top: 34px; }
+.prox h3 {
+  font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--gris); margin: 0 0 12px;
+}
+.prox-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip {
+  background: #fff; border: 1.5px dashed var(--linea); color: var(--gris);
+  padding: 10px 14px; border-radius: 999px; font-size: 13px; font-weight: 600;
+}
+
+/* ---------- Footer ---------- */
+.pie {
+  margin-top: 30px;
+  padding: 18px 18px calc(18px + var(--safe-bottom));
+  display: flex; flex-direction: column; gap: 4px; align-items: center;
+  color: var(--gris); font-size: 12px; text-align: center;
+}
+
+/* ---------- Pantallas más anchas ---------- */
+@media (min-width: 620px) {
+  .cta-grid { grid-template-columns: 1fr 1fr; }
+  .card { flex-direction: column; align-items: flex-start; min-height: 200px; }
+  .card-flecha { position: static; align-self: flex-start; margin-top: auto; }
+  .pie { flex-direction: row; justify-content: space-between; }
+}
