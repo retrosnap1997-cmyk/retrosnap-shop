@@ -4,7 +4,7 @@ name: Deploy a GitHub Pages
 # Se ejecuta al pushear a la rama de trabajo y también a mano.
 on:
   push:
-    branches: ["claude/retrosnap-photo-app-ine8uz"]
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
