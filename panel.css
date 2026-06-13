@@ -1,16 +1,16 @@
 /* ============================================================
    RetroSnap — Panel de entrada (front panel)
-   Estilo retro-surf con onda punk rock. Mobile-first.
+   Paleta de marca tomada del logo: BLANCO + NEGRO + ROJO.
+   Mobile-first.
    ============================================================ */
 :root {
-  --arena: #f6f1e7;
-  --tinta: #1d2b2b;
-  --coral: #e8603c;
-  --oceano: #176d6d;
-  --oceano-hondo: #0f4f4f;
-  --sol: #f2b441;
-  --gris: #6c7a7a;
-  --linea: #e2dccf;
+  --rojo: #B2382F;        /* rojo del logo */
+  --rojo-osc: #8E2C25;    /* rojo más oscuro (gradientes/active) */
+  --negro: #0F0A0A;       /* negro del logo */
+  --blanco: #ffffff;
+  --hueso: #f7f5f3;       /* off-white sutil */
+  --gris: #6b6664;
+  --linea: #e6e1de;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -19,8 +19,8 @@
 html, body { margin: 0; }
 body {
   font-family: "Inter", -apple-system, system-ui, sans-serif;
-  background: var(--arena);
-  color: var(--tinta);
+  background: var(--blanco);
+  color: var(--negro);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -29,52 +29,55 @@ body {
 /* ---------- HERO ---------- */
 .hero {
   position: relative;
-  background: linear-gradient(160deg, #1c8080 0%, var(--oceano) 55%, var(--oceano-hondo) 100%);
-  color: #fff;
-  padding: calc(20px + var(--safe-top)) 20px 0;
+  background: var(--blanco);
+  color: var(--negro);
+  padding: calc(22px + var(--safe-top)) 20px 0;
   overflow: hidden;
+  border-top: 6px solid var(--rojo);
 }
 .grano {
-  position: absolute; inset: 0; pointer-events: none; opacity: .25;
-  background-image: radial-gradient(rgba(255,255,255,.35) 1px, transparent 1.4px);
+  position: absolute; inset: 0; pointer-events: none; opacity: .5;
+  background-image: radial-gradient(rgba(15,10,10,.06) 1px, transparent 1.4px);
   background-size: 14px 14px;
 }
-.hero-centro { position: relative; z-index: 2; text-align: center; padding: 18px 0 64px; }
 
-/* Logo real montado como sticker (placa blanca con sombra) */
+.hero-centro { position: relative; z-index: 2; text-align: center; padding: 16px 0 64px; }
+
+/* Logo real, presentado como placa/sticker con borde negro */
 .logo-plate {
   position: relative;
   display: inline-block;
-  width: min(82%, 360px);
-  background: #fff;
-  border-radius: 24px;
-  padding: 14px 18px;
-  box-shadow: 0 14px 30px rgba(0,0,0,.28);
-  transform: rotate(-1.8deg);
+  width: min(88%, 420px);
+  border-radius: 18px;
+  overflow: hidden;
+  border: 4px solid var(--negro);
+  box-shadow: 0 14px 30px rgba(15,10,10,.22);
+  transform: rotate(-1.6deg);
 }
 .logo-plate img { width: 100%; height: auto; display: block; }
 .sticker {
-  position: absolute; right: -14px; bottom: -12px;
+  position: absolute; right: -10px; bottom: -10px;
   font-family: "Permanent Marker", cursive;
-  background: var(--sol); color: var(--tinta);
+  background: var(--negro); color: #fff;
   padding: 5px 11px; border-radius: 6px;
-  transform: rotate(5deg);
+  transform: rotate(4deg);
   font-size: 11px; letter-spacing: .5px;
-  box-shadow: 0 3px 0 rgba(0,0,0,.25);
-  border: 2px solid var(--tinta);
+  box-shadow: 0 3px 0 var(--rojo);
 }
-.eslogan { margin: 20px 0 0; font-weight: 700; opacity: .95; font-size: clamp(13px, 3.6vw, 16px); letter-spacing: .5px; }
+.eslogan {
+  margin: 22px 0 0; font-weight: 800; font-size: clamp(13px, 3.6vw, 16px);
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--negro);
+}
 .grito {
   font-family: "Permanent Marker", cursive;
-  margin: 14px 0 0; color: var(--coral);
-  background: #fff; display: inline-block;
-  padding: 4px 16px; border-radius: 999px;
+  margin: 14px 0 0; color: #fff; background: var(--rojo);
+  display: inline-block; padding: 5px 18px; border-radius: 999px;
   transform: rotate(-2deg);
   font-size: clamp(16px, 4.5vw, 22px);
-  box-shadow: 0 4px 0 rgba(0,0,0,.2);
+  box-shadow: 0 4px 0 var(--negro);
 }
 
-.ola { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 130px; display: block; }
+.ola { position: absolute; left: 0; right: 0; bottom: -1px; width: 100%; height: 120px; display: block; }
 
 /* ---------- PANEL ---------- */
 .panel {
@@ -91,18 +94,18 @@ body {
   padding: 22px;
   border-radius: 22px;
   text-decoration: none; color: #fff;
-  box-shadow: 0 10px 24px rgba(0,0,0,.14);
-  border: 3px solid rgba(0,0,0,.12);
+  box-shadow: 0 10px 24px rgba(15,10,10,.16);
+  border: 3px solid var(--negro);
   transition: transform .12s ease, box-shadow .12s ease;
   overflow: hidden;
 }
-.card:active { transform: translateY(2px) scale(.99); box-shadow: 0 6px 14px rgba(0,0,0,.16); }
-.card-studio { background: linear-gradient(135deg, #f07a52, var(--coral)); }
-.card-tienda { background: linear-gradient(135deg, #1c8080, var(--oceano)); }
+.card:active { transform: translateY(2px) scale(.99); box-shadow: 0 6px 14px rgba(15,10,10,.2); }
+.card-studio { background: linear-gradient(135deg, #c5443a, var(--rojo)); }
+.card-tienda { background: linear-gradient(135deg, #2a2422, var(--negro)); }
 .card-icono {
   flex: 0 0 auto;
   width: 64px; height: 64px; border-radius: 16px;
-  background: rgba(255,255,255,.18);
+  background: rgba(255,255,255,.16);
   display: flex; align-items: center; justify-content: center;
   font-size: 34px;
 }
@@ -115,7 +118,7 @@ body {
 .card-flecha {
   position: absolute; right: 18px; bottom: 14px;
   font-weight: 700; font-size: 14px;
-  background: rgba(255,255,255,.22); padding: 5px 12px; border-radius: 999px;
+  background: rgba(255,255,255,.2); padding: 5px 12px; border-radius: 999px;
 }
 
 /* ---------- Próximamente ---------- */
@@ -126,8 +129,9 @@ body {
 }
 .prox-chips { display: flex; flex-wrap: wrap; gap: 10px; }
 .chip {
-  background: #fff; border: 1.5px dashed var(--linea); color: var(--gris);
+  background: var(--blanco); border: 1.5px dashed var(--negro); color: var(--negro);
   padding: 10px 14px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  opacity: .65;
 }
 
 /* ---------- Footer ---------- */
@@ -136,6 +140,7 @@ body {
   padding: 18px 18px calc(18px + var(--safe-bottom));
   display: flex; flex-direction: column; gap: 4px; align-items: center;
   color: var(--gris); font-size: 12px; text-align: center;
+  border-top: 1px solid var(--linea);
 }
 
 /* ---------- Pantallas más anchas ---------- */
