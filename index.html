@@ -3,96 +3,64 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#B2382F">
+  <meta name="theme-color" content="#0F0A0A">
   <title>RetroSnap · Panel</title>
   <meta name="description" content="Panel de RetroSnap Surf Goodies — Studio y Tienda.">
   <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="assets/icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Permanent+Marker&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="panel.css">
 </head>
 <body>
 
-  <!-- ================= HERO / OLA PUNK ================= -->
+  <!-- ================= HERO ================= -->
   <header class="hero">
-    <!-- textura de puntos -->
-    <div class="grano" aria-hidden="true"></div>
-
-    <div class="hero-centro">
-      <div class="logo-plate">
-        <img src="assets/logo.jpg" alt="RetroSnap · Surf Goodies" width="900" height="509">
-        <span class="sticker">DIY · SECONDHAND · SURF</span>
+    <div class="hero-inner">
+      <div class="logo-card">
+        <img src="assets/logo.jpg" alt="RetroSnap · Surf Goodies" width="1472" height="832">
       </div>
-      <p class="eslogan">Surf Goodies · Santa Teresa, Costa Rica</p>
-      <p class="grito">elegí tu ola 🤙</p>
+      <p class="tagline">SURF GOODIES · SANTA TERESA, CR</p>
     </div>
-
-    <!-- OLA PUNK ROCK (cresta dentada + rayo + spray) -->
-    <svg class="ola" viewBox="0 0 1440 240" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <!-- spray -->
-      <g fill="#0F0A0A" opacity=".3">
-        <circle cx="210" cy="60" r="6"/><circle cx="320" cy="38" r="4"/><circle cx="380" cy="70" r="5"/>
-        <circle cx="980" cy="44" r="5"/><circle cx="1080" cy="66" r="7"/><circle cx="1180" cy="40" r="4"/>
-        <circle cx="1290" cy="70" r="5"/>
-      </g>
-      <!-- cuerpo de la ola, con cresta dentada (punk) -->
-      <path d="M0,120
-               L70,96 L110,128 L150,92 L196,126 L240,86 L286,124 L330,90
-               L378,128 L420,96 L470,130 L520,98 L572,132 L620,100
-               L676,134 L720,104 L778,136 L820,108 L880,138 L930,108
-               L988,138 L1040,110 L1100,140 L1150,112 L1210,142 L1264,114
-               L1320,144 L1372,118 L1440,140
-               L1440,240 L0,240 Z"
-            fill="#0F0A0A"/>
-      <!-- línea de espuma (roja) -->
-      <path d="M0,150 C160,120 300,180 480,150 C660,120 820,182 1010,150 C1200,118 1320,176 1440,150"
-            fill="none" stroke="#B2382F" stroke-width="6" stroke-linecap="round" opacity=".95"/>
-      <!-- rayo punk (rojo) -->
-      <path d="M250,30 L226,96 L262,96 L232,170 L300,84 L262,84 L286,30 Z"
-            fill="#B2382F" stroke="#0F0A0A" stroke-width="4" stroke-linejoin="round"/>
-    </svg>
   </header>
 
   <!-- ================= PANEL ================= -->
   <main class="panel">
-    <nav class="cta-grid" aria-label="Secciones de RetroSnap">
+    <p class="intro">¿A dónde vamos?</p>
 
+    <nav class="cta" aria-label="Secciones de RetroSnap">
       <a class="card card-studio" href="studio/">
-        <div class="card-icono">📷</div>
-        <div class="card-texto">
-          <h2>Studio</h2>
-          <p>Sacá fotos, recortá el fondo y cargá tu stock en minutos.</p>
-        </div>
-        <span class="card-flecha">Entrar →</span>
+        <span class="card-ico">📷</span>
+        <span class="card-main">
+          <strong>Studio</strong>
+          <small>Sacá fotos, recortá el fondo y cargá tu stock.</small>
+        </span>
+        <span class="card-go">Entrar</span>
       </a>
 
       <a class="card card-tienda" href="tienda/">
-        <div class="card-icono">🛍️</div>
-        <div class="card-texto">
-          <h2>Tienda</h2>
-          <p>Tu tienda online para mirar el catálogo y compartirlo.</p>
-        </div>
-        <span class="card-flecha">Ver →</span>
+        <span class="card-ico">🛍️</span>
+        <span class="card-main">
+          <strong>Tienda</strong>
+          <small>Mirá el catálogo online y compartilo.</small>
+        </span>
+        <span class="card-go">Ver</span>
       </a>
-
     </nav>
 
-    <!-- Espacio para sumar funciones más adelante -->
     <section class="prox">
-      <h3>Próximamente</h3>
-      <div class="prox-chips">
-        <span class="chip" title="En camino">📲 Instagram</span>
-        <span class="chip" title="En camino">📦 Pedidos</span>
-        <span class="chip" title="En camino">📊 Reportes</span>
-        <span class="chip" title="En camino">🏷️ Etiquetas QR</span>
+      <h2>Próximamente</h2>
+      <div class="chips">
+        <span class="chip">📲 Instagram</span>
+        <span class="chip">📦 Pedidos</span>
+        <span class="chip">📊 Reportes</span>
+        <span class="chip">🏷️ Etiquetas</span>
       </div>
     </section>
   </main>
 
   <footer class="pie">
-    <span>© <span id="anio"></span> RetroSnap Surf Goodies · Santa Teresa, CR</span>
-    <span>Hecho con 🤙 y olas</span>
+    <span>© <span id="anio"></span> RetroSnap Surf Goodies · Santa Teresa, Costa Rica</span>
   </footer>
 
   <script>document.getElementById("anio").textContent = new Date().getFullYear();</script>
