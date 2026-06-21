@@ -16,7 +16,7 @@ const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
 // Etiqueta de versión visible (para confirmar que NO estás viendo caché viejo).
-const VERSION = "v13 · fix arranque + editor lazy";
+const VERSION = "v14 · fix editor tapando todo";
 
 // ---------- Estado del flujo de captura (multi-foto) ----------
 const flujo = {

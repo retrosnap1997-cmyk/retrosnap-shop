@@ -16,6 +16,9 @@
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+/* El atributo hidden SIEMPRE gana (evita que .editor/.cam-tray/etc. se vean
+   cuando deben estar ocultos por su display en CSS). */
+[hidden] { display: none !important; }
 html, body { margin: 0; height: 100%; }
 body {
   font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
