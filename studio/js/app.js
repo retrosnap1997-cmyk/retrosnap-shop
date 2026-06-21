@@ -15,6 +15,9 @@ import * as Cloud from "./cloud.js";
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
+// Etiqueta de versión visible (para confirmar que NO estás viendo caché viejo).
+const VERSION = "v10 · auto-percha + modelo full";
+
 // ---------- Estado del flujo de captura (multi-foto) ----------
 const flujo = {
   modo: "colgada",
@@ -393,6 +396,8 @@ async function cargarAjustes() {
   const { url, key } = await Cloud.configActual();
   $("#a-cloud-url").value = url;
   $("#a-cloud-key").value = key;
+  const ver = $("#app-version");
+  if (ver) ver.textContent = "Versión: " + VERSION;
   await actualizarEstadoNube();
 }
 
