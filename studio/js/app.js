@@ -11,13 +11,12 @@ import { generarCodigo } from "./codes.js";
 import { aCSV, aJSON, descargar } from "./export.js";
 import { TEMPLATES, templatePorId, precargarTemplates } from "./templates.js";
 import * as Cloud from "./cloud.js";
-import { initEditor, abrirEditor } from "./editor.js";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
 // Etiqueta de versión visible (para confirmar que NO estás viendo caché viejo).
-const VERSION = "v12 · borrador manual de percha";
+const VERSION = "v13 · fix arranque + editor lazy";
 
 // ---------- Estado del flujo de captura (multi-foto) ----------
 const flujo = {
@@ -31,6 +30,19 @@ const flujo = {
 };
 
 let templatesImg = {}; // plantillas precargadas (id → HTMLImageElement)
+
+// El editor se carga SOLO cuando se usa: así un problema con editor.js
+// nunca puede romper el arranque del Studio.
+let _editor = null;
+async function abrirEditorLazy(i) {
+  try {
+    if (!_editor) { _editor = await import("./editor.js"); _editor.initEditor(); }
+    _editor.abrirEditor(flujo.recortes[i], () => renderRecorteGrid());
+  } catch (e) {
+    console.error("[editor]", e);
+    toast("No pude abrir el editor.");
+  }
+}
 
 function fondoActual() {
   if (flujo.fondo.startsWith("tpl:")) {
@@ -502,10 +514,7 @@ function bind() {
   // Grilla de recortes: borrar percha / elegir principal / quitar
   $("#recorte-grid").addEventListener("click", (e) => {
     const edit = e.target.closest("[data-edit-foto]");
-    if (edit) {
-      abrirEditor(flujo.recortes[+edit.dataset.editFoto], () => renderRecorteGrid());
-      return;
-    }
+    if (edit) { abrirEditorLazy(+edit.dataset.editFoto); return; }
     const del = e.target.closest("[data-del-foto]");
     if (del) {
       const i = +del.dataset.delFoto;
@@ -575,13 +584,17 @@ function bind() {
 //  INIT
 // ============================================================
 async function init() {
-  renderModos();
-  templatesImg = await precargarTemplates();
-  renderFondos();
-  initEditor();
-  bind();
-  await cargarAjustes();
-  await renderStock();
+  try {
+    renderModos();
+    try { templatesImg = await precargarTemplates(); } catch (e) { console.warn("templates:", e); }
+    renderFondos();
+    bind();
+    await cargarAjustes();
+    await renderStock();
+  } catch (e) {
+    console.error("[init]", e);
+    toast("Error al iniciar: " + (e && e.message));
+  }
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch((e) => console.warn("SW:", e));
   }

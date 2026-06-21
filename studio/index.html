@@ -5,6 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#0F0A0A">
   <title>RetroSnap Studio</title>
+  <script>
+    // Cartel de error visible: si algo falla, lo ves (y me lo podés mostrar).
+    (function () {
+      function mostrar(txt) {
+        var b = document.getElementById("errbar");
+        if (!b) {
+          b = document.createElement("div");
+          b.id = "errbar";
+          b.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#B2382F;color:#fff;font:12px/1.4 monospace;padding:10px;white-space:pre-wrap;max-height:50vh;overflow:auto";
+          (document.body || document.documentElement).appendChild(b);
+        }
+        b.textContent = "⚠️ " + txt;
+      }
+      window.addEventListener("error", function (e) {
+        mostrar((e.message || "error") + "\n" + ((e.filename || "").split("/").pop()) + ":" + (e.lineno || ""));
+      });
+      window.addEventListener("unhandledrejection", function (e) {
+        var r = e.reason || {};
+        mostrar("promesa: " + (r.message || r));
+      });
+    })();
+  </script>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <link rel="stylesheet" href="studio.css">
