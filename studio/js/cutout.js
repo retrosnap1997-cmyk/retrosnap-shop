@@ -57,9 +57,23 @@ export async function recortar(blob, { onProgress, size = 1600 } = {}) {
   }
 
   if (onProgress) onProgress("Listo", 1);
-  // Devolvemos el recorte CRUDO (transparente). El encuadre/recorte de percha
-  // se hace con enmarcar() en el momento de mostrar/componer (permite ajustar).
-  return { canvas: recortado, motor };
+  // Devolvemos el recorte CRUDO (transparente), limitado en tamaño. El encuadre
+  // y el borrado manual se hacen después (enmarcar / editor).
+  return { canvas: limitar(recortado, 1600), motor };
+}
+
+// Limita el lado mayor del canvas a 'max' px (editor/undo más livianos).
+function limitar(canvas, max) {
+  const m = Math.max(canvas.width, canvas.height);
+  if (m <= max) return canvas;
+  const r = max / m;
+  const c = document.createElement("canvas");
+  c.width = Math.round(canvas.width * r);
+  c.height = Math.round(canvas.height * r);
+  const ctx = c.getContext("2d");
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(canvas, 0, 0, c.width, c.height);
+  return c;
 }
 
 // Dibuja el FONDO en un contexto: un color, transparente, o una imagen de

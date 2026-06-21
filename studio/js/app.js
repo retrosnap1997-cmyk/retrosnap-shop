@@ -11,12 +11,13 @@ import { generarCodigo } from "./codes.js";
 import { aCSV, aJSON, descargar } from "./export.js";
 import { TEMPLATES, templatePorId, precargarTemplates } from "./templates.js";
 import * as Cloud from "./cloud.js";
+import { initEditor, abrirEditor } from "./editor.js";
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
 // Etiqueta de versión visible (para confirmar que NO estás viendo caché viejo).
-const VERSION = "v11 · percha por densidad + slider";
+const VERSION = "v12 · borrador manual de percha";
 
 // ---------- Estado del flujo de captura (multi-foto) ----------
 const flujo = {
@@ -194,8 +195,6 @@ async function procesarRecorteBatch() {
   flujo.recortes = [];
   flujo.cover = 0;
   flujo.topCrop = 0;
-  const tc = $("#top-crop"); if (tc) tc.value = 0;
-  const tv = $("#topcrop-val"); if (tv) tv.textContent = "0%";
 
   const N = flujo.capturas.length;
   let algunIA = false, algunOff = false;
@@ -234,6 +233,7 @@ function renderRecorteGrid() {
     `<div class="recorte-thumb ${i === flujo.cover ? "es-cover" : ""}" data-i="${i}">
        <canvas></canvas>
        ${i === flujo.cover ? `<span class="thumb-cover">⭐ Principal</span>` : ""}
+       <button class="thumb-edit" data-edit-foto="${i}" title="Borrar percha/objeto">🩹</button>
        <button class="thumb-del" data-del-foto="${i}" title="Quitar">🗑️</button>
      </div>`).join("");
   grid.querySelectorAll(".recorte-thumb").forEach((el, i) => {
@@ -246,7 +246,7 @@ function pintarThumb(canvas, recorteCrudo, templateImg, caja) {
   canvas.width = canvas.height = size;
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, size, size);
-  const framed = Cut.enmarcar(recorteCrudo, { size, topCrop: flujo.topCrop });
+  const framed = Cut.enmarcar(recorteCrudo, { size, topCrop: flujo.topCrop, recortarColgador: false });
   if (!templateImg && flujo.fondo === "transparente") pintarDamero(ctx, size);
   else Cut.dibujarFondo(ctx, size, { fondo: flujo.fondo, templateImg });
   Cut.colocarPrenda(ctx, size, framed, caja);
@@ -334,7 +334,7 @@ async function guardarPrenda() {
     const orden = [flujo.cover, ...flujo.recortes.map((_, i) => i).filter((i) => i !== flujo.cover)];
     const fotosFinalBlobs = [];
     for (const i of orden) {
-      const framed = Cut.enmarcar(flujo.recortes[i], { size: 1600, topCrop: flujo.topCrop });
+      const framed = Cut.enmarcar(flujo.recortes[i], { size: 1600, topCrop: flujo.topCrop, recortarColgador: false });
       fotosFinalBlobs.push(await Cut.componer(framed, { fondo: flujo.fondo, templateImg, caja }));
     }
 
@@ -499,8 +499,13 @@ function bind() {
     renderRecorteGrid();
   });
 
-  // Grilla de recortes: elegir principal / quitar
+  // Grilla de recortes: borrar percha / elegir principal / quitar
   $("#recorte-grid").addEventListener("click", (e) => {
+    const edit = e.target.closest("[data-edit-foto]");
+    if (edit) {
+      abrirEditor(flujo.recortes[+edit.dataset.editFoto], () => renderRecorteGrid());
+      return;
+    }
     const del = e.target.closest("[data-del-foto]");
     if (del) {
       const i = +del.dataset.delFoto;
@@ -514,13 +519,6 @@ function bind() {
     }
     const thumb = e.target.closest(".recorte-thumb");
     if (thumb) { flujo.cover = +thumb.dataset.i; renderRecorteGrid(); }
-  });
-
-  // Recorte manual desde arriba (saca clips/percha que la IA dejó)
-  $("#top-crop").addEventListener("input", (e) => {
-    flujo.topCrop = (+e.target.value) / 100;
-    $("#topcrop-val").textContent = e.target.value + "%";
-    renderRecorteGrid();
   });
 
   $("#btn-rehacer").addEventListener("click", () => { resetFlujo(); ir("capturar"); });
@@ -580,6 +578,7 @@ async function init() {
   renderModos();
   templatesImg = await precargarTemplates();
   renderFondos();
+  initEditor();
   bind();
   await cargarAjustes();
   await renderStock();

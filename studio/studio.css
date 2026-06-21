@@ -122,6 +122,26 @@ body {
 .recorte-thumb.es-cover { border-color: var(--coral); box-shadow: 0 0 0 2px var(--coral); }
 .thumb-cover { position: absolute; left: 6px; bottom: 6px; background: var(--coral); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
 .thumb-del { position: absolute; top: 6px; right: 6px; background: rgba(255,255,255,.92); border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 13px; cursor: pointer; }
+.thumb-edit { position: absolute; top: 6px; left: 6px; background: var(--coral); color: #fff; border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 13px; cursor: pointer; }
+
+/* ---------- Editor (borrar percha/objeto) ---------- */
+.editor { position: fixed; inset: 0; z-index: 100; background: #14110f; display: flex; flex-direction: column; padding: calc(10px + env(safe-area-inset-top,0px)) 14px calc(14px + var(--safe-bottom)); }
+.editor-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.editor-top .btn-ghost { color: #fff; border-color: rgba(255,255,255,.3); padding: 10px 16px; }
+.editor-titulo { color: #fff; font-weight: 700; font-size: 15px; }
+.editor-wrap { flex: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; margin: 12px 0; }
+#ed-canvas {
+  max-width: 100%; max-height: 64vh; touch-action: none; cursor: crosshair; border-radius: 8px;
+  background-color: #fff;
+  background-image:
+    linear-gradient(45deg,#d8d8d8 25%,transparent 25%,transparent 75%,#d8d8d8 75%),
+    linear-gradient(45deg,#d8d8d8 25%,transparent 25%,transparent 75%,#d8d8d8 75%);
+  background-size: 22px 22px; background-position: 0 0, 11px 11px;
+}
+.editor-tip { color: rgba(255,255,255,.7); font-size: 12.5px; text-align: center; margin: 0 0 10px; }
+.editor-tools { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.ed-size-label { color: #fff; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; margin: 0; }
+#ed-size { width: 150px; accent-color: var(--coral); }
 .recorte-ayuda { font-size: 12.5px; color: var(--gris); margin: 12px 0 0; }
 .cortar-arriba { margin-top: 14px; }
 .ca-label { font-size: 13px; font-weight: 600; color: var(--gris); }
