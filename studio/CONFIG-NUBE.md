@@ -29,9 +29,13 @@ create table if not exists prendas (
   precio      numeric,
   descripcion text,
   plantilla   text,
-  foto_url    text,
+  foto_url    text,                -- portada (1ª foto)
+  fotos       text,                -- todas las fotos de la prenda (JSON: ["url1","url2",...])
   creada      timestamptz default now()
 );
+
+-- Si ya tenías la tabla de antes, agregá la columna nueva:
+-- alter table prendas add column if not exists fotos text;
 
 -- Permitir que la app (clave pública) lea y escriba.
 -- Es una herramienta interna de un solo usuario; se puede endurecer luego.

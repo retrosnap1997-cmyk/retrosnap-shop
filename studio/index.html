@@ -46,35 +46,36 @@
     <div class="cam-wrap">
       <video id="cam-video" playsinline muted></video>
       <div class="cam-guia" id="cam-guia"></div>
-      <div class="cam-tip" id="cam-tip">Buena luz · fondo parejo · prenda centrada</div>
+      <div class="cam-tip" id="cam-tip">Sacá varias fotos de la prenda · buena luz · fondo parejo</div>
     </div>
     <div class="modos" id="modos"></div>
+    <div class="cam-tray" id="cam-tray" hidden></div>
     <div class="cam-barra">
       <button class="btn-ghost" data-ir="stock">Cancelar</button>
       <button class="shutter" id="btn-shutter" aria-label="Sacar foto"></button>
       <button class="btn-ghost" id="btn-galeria">📁 Galería</button>
     </div>
-    <input type="file" id="file-galeria" accept="image/*" hidden>
+    <button class="btn-primario btn-continuar" id="btn-cam-listo" hidden>Recortar fotos →</button>
+    <input type="file" id="file-galeria" accept="image/*" multiple hidden>
   </main>
 
   <!-- ============ PANTALLA: RECORTE ============ -->
   <main class="screen" id="screen-recorte">
-    <h1>Recorte</h1>
-    <div class="recorte-preview" id="recorte-preview">
-      <canvas id="recorte-canvas"></canvas>
-      <div class="recorte-cargando" id="recorte-cargando">
-        <div class="spinner"></div>
-        <p id="recorte-msg">Procesando…</p>
-        <div class="barra"><div class="barra-fill" id="recorte-barra"></div></div>
-      </div>
+    <h1>Recorte <span class="recorte-contador" id="recorte-contador"></span></h1>
+    <div class="recorte-cargando" id="recorte-cargando" hidden>
+      <div class="spinner"></div>
+      <p id="recorte-msg">Procesando…</p>
+      <div class="barra"><div class="barra-fill" id="recorte-barra"></div></div>
     </div>
+    <div class="recorte-grid" id="recorte-grid"></div>
     <div class="fondos">
       <span class="fondos-label">Fondo:</span>
       <div class="fondos-chips" id="fondos-chips"></div>
     </div>
     <p class="motor-nota" id="motor-nota"></p>
+    <p class="recorte-ayuda">⭐ Tocá una foto para elegir la <b>principal</b> · 🗑️ para quitarla</p>
     <div class="acciones-fila">
-      <button class="btn-ghost" id="btn-rehacer">↺ Repetir foto</button>
+      <button class="btn-ghost" id="btn-rehacer">↺ Empezar de nuevo</button>
       <button class="btn-primario" id="btn-a-ficha">Continuar →</button>
     </div>
   </main>

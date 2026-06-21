@@ -56,44 +56,65 @@ export async function probar() {
   return true;
 }
 
-// ---------- Imágenes ----------
-async function subirImagen(c, codigo, blob) {
-  if (!blob) return null;
-  const path = `${codigo}.jpg`;
-  const { error } = await c.storage.from(BUCKET).upload(path, blob, {
-    upsert: true, contentType: blob.type || "image/jpeg",
-  });
-  if (error) throw new Error("Storage: " + error.message);
-  return c.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+// ---------- Imágenes (varias por prenda: codigo-0.jpg, codigo-1.jpg, …) ----------
+async function subirImagenes(c, codigo, blobs) {
+  const urls = [];
+  for (let i = 0; i < blobs.length; i++) {
+    if (!blobs[i]) continue;
+    const path = `${codigo}-${i}.jpg`;
+    const { error } = await c.storage.from(BUCKET).upload(path, blobs[i], {
+      upsert: true, contentType: blobs[i].type || "image/jpeg",
+    });
+    if (error) throw new Error("Storage: " + error.message);
+    urls.push(c.storage.from(BUCKET).getPublicUrl(path).data.publicUrl);
+  }
+  return urls;
 }
 
 // ---------- Prendas ----------
-function aFila(p, fotoURL) {
+function aFila(p, urls) {
+  const fotos = (urls && urls.length) ? urls : (p.fotos || (p.fotoFinalURL ? [p.fotoFinalURL] : []));
   return {
     codigo: p.codigo, estado: p.estado, nombre: p.nombre, marca: p.marca,
     categoria: p.categoria, talle: p.talle, condicion: p.condicion,
     precio: p.precio, descripcion: p.descripcion, plantilla: p.plantillaUsada || null,
-    foto_url: fotoURL ?? p.fotoFinalURL ?? null, creada: p.creada,
+    foto_url: fotos[0] ?? null,        // portada (compatibilidad con consumidores simples)
+    fotos: JSON.stringify(fotos),      // array completo de URLs
+    creada: p.creada,
   };
 }
 
 function aPrenda(f) {
+  let fotos = [];
+  try { fotos = f.fotos ? JSON.parse(f.fotos) : []; } catch { fotos = []; }
+  if (!fotos.length && f.foto_url) fotos = [f.foto_url];
   return {
     codigo: f.codigo, estado: f.estado, nombre: f.nombre, marca: f.marca,
     categoria: f.categoria, talle: f.talle, condicion: f.condicion,
     precio: f.precio, descripcion: f.descripcion, plantillaUsada: f.plantilla,
-    fotoFinalURL: f.foto_url, creada: f.creada, enNube: true,
+    fotoFinalURL: f.foto_url || fotos[0] || null, fotos,
+    creada: f.creada, enNube: true,
   };
 }
 
-// Sube/actualiza una prenda (foto + fila). Devuelve la URL pública de la foto.
+// Sube/actualiza una prenda (TODAS sus fotos + fila). Devuelve la URL de portada.
 export async function subirPrenda(prenda) {
   const c = await cliente();
   if (!c) return null;
-  const fotoURL = await subirImagen(c, prenda.codigo, prenda.fotoFinalBlob);
-  const { error } = await c.from("prendas").upsert(aFila(prenda, fotoURL), { onConflict: "codigo" });
+  const blobs = (prenda.fotosFinalBlobs && prenda.fotosFinalBlobs.length)
+    ? prenda.fotosFinalBlobs
+    : (prenda.fotoFinalBlob ? [prenda.fotoFinalBlob] : []);
+  const urls = await subirImagenes(c, prenda.codigo, blobs);
+  const fila = aFila(prenda, urls);
+  let { error } = await c.from("prendas").upsert(fila, { onConflict: "codigo" });
+  // Compatibilidad: si la tabla todavía no tiene la columna 'fotos', reintenta sin ella.
+  if (error && /fotos/i.test(error.message || "")) {
+    const { fotos, ...sinFotos } = fila;
+    ({ error } = await c.from("prendas").upsert(sinFotos, { onConflict: "codigo" }));
+  }
   if (error) throw new Error(error.message);
-  return fotoURL;
+  prenda.fotos = urls;
+  return urls[0] || null;
 }
 
 // Trae todo el stock de la nube (más nuevas primero).
@@ -108,7 +129,9 @@ export async function bajarPrendas() {
 export async function borrarPrendaCloud(codigo) {
   const c = await cliente();
   if (!c) return;
-  await c.storage.from(BUCKET).remove([`${codigo}.jpg`]);
+  // Borra la portada vieja (codigo.jpg) y hasta 16 fotos (codigo-0..15.jpg).
+  const paths = [`${codigo}.jpg`, ...Array.from({ length: 16 }, (_, i) => `${codigo}-${i}.jpg`)];
+  await c.storage.from(BUCKET).remove(paths);
   const { error } = await c.from("prendas").delete().eq("codigo", codigo);
   if (error) throw new Error(error.message);
 }
