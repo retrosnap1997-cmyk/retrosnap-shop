@@ -56,10 +56,10 @@ export async function recortar(blob, { onProgress, size = 1600 } = {}) {
     recortado = recorteOffline(await blobACanvas(blob));
   }
 
-  if (onProgress) onProgress("Encuadrando…", 0.97);
-  const canvas = autoRecuadre(recortado, { size });
   if (onProgress) onProgress("Listo", 1);
-  return { canvas, motor };
+  // Devolvemos el recorte CRUDO (transparente). El encuadre/recorte de percha
+  // se hace con enmarcar() en el momento de mostrar/componer (permite ajustar).
+  return { canvas: recortado, motor };
 }
 
 // Dibuja el FONDO en un contexto: un color, transparente, o una imagen de
@@ -114,80 +114,66 @@ async function blobACanvas(blob) {
   return c;
 }
 
-// Auto-recuadre: detecta el rectángulo de la prenda, le RECORTA el gancho de la
-// percha (la "tira finita" de arriba) y la centra en un canvas cuadrado de 'size'.
-function autoRecuadre(canvas, { size = 1600, margen = 0.08, recortarColgador = true } = {}) {
+// Escanea el recorte UNA vez y cachea, por fila: cantidad de píxeles opacos
+// (densidad) y bordes X. Reusado por enmarcar() para que el slider sea fluido.
+function filasDe(canvas) {
+  if (canvas._rsFilas) return canvas._rsFilas;
   const ctx = canvas.getContext("2d");
   const { width: w, height: h } = canvas;
   const data = ctx.getImageData(0, 0, w, h).data;
-
-  // Bounding box + ancho de la prenda a cada altura (min/max X por fila).
+  const rowCount = new Int32Array(h);
   const rowMin = new Int32Array(h).fill(w);
   const rowMax = new Int32Array(h).fill(-1);
-  let minX = w, minY = h, maxX = 0, maxY = 0, hay = false;
+  let minY = h, maxY = 0, maxCount = 1, hay = false;
   for (let y = 0; y < h; y++) {
     const base = y * w;
-    let rmin = w, rmax = -1;
+    let cnt = 0, rmin = w, rmax = -1;
     for (let x = 0; x < w; x++) {
-      if (data[(base + x) * 4 + 3] > 24) {
-        if (x < rmin) rmin = x;
-        if (x > rmax) rmax = x;
-      }
+      if (data[(base + x) * 4 + 3] > 24) { cnt++; if (x < rmin) rmin = x; if (x > rmax) rmax = x; }
     }
-    rowMin[y] = rmin; rowMax[y] = rmax;
-    if (rmax >= 0) {
-      hay = true;
-      if (rmin < minX) minX = rmin;
-      if (rmax > maxX) maxX = rmax;
-      if (y < minY) minY = y;
-      if (y > maxY) maxY = y;
-    }
+    rowCount[y] = cnt; rowMin[y] = rmin; rowMax[y] = rmax;
+    if (cnt > 0) { hay = true; if (y < minY) minY = y; if (y > maxY) maxY = y; if (cnt > maxCount) maxCount = cnt; }
   }
-  if (!hay) { minX = 0; minY = 0; maxX = w - 1; maxY = h - 1; }
+  if (!hay) { minY = 0; maxY = h - 1; }
+  canvas._rsFilas = { w, h, rowCount, rowMin, rowMax, minY, maxY, maxCount, hay };
+  return canvas._rsFilas;
+}
 
-  // Ancho máximo del cuerpo de la prenda.
-  let maxRowW = 1;
-  for (let y = minY; y <= maxY; y++) {
-    const rw = rowMax[y] >= 0 ? rowMax[y] - rowMin[y] + 1 : 0;
-    if (rw > maxRowW) maxRowW = rw;
-  }
+// Encuadra la prenda en un cuadrado de 'size':
+//  • recorta la PERCHA midiendo DENSIDAD (filas con pocos píxeles = gancho/alambres),
+//  • aplica un recorte manual extra desde arriba (topCrop 0..0.5),
+//  • centra la prenda con un margen.
+export function enmarcar(canvas, { size = 1600, margen = 0.08, recortarColgador = true, topCrop = 0 } = {}) {
+  const f = filasDe(canvas);
+  let minY = f.minY, maxY = f.maxY;
 
-  // Recortar el gancho: saltar desde arriba las filas "finitas" hasta que
-  // empieza el cuerpo (más del 18% del ancho máximo). Tope: 35% del alto.
-  if (recortarColgador && maxRowW > 1) {
-    const umbral = maxRowW * 0.18;
-    const tope = minY + (maxY - minY) * 0.35;
+  // Recorte de percha: saltar desde arriba las filas POCO densas (gancho/alambres).
+  if (recortarColgador && f.hay) {
+    const umbral = f.maxCount * 0.22;            // < 22% de la densidad máxima = "fino"
+    const tope = minY + (maxY - minY) * 0.45;    // nunca más del 45% del alto
     let y = minY;
-    while (y < tope) {
-      const rw = rowMax[y] >= 0 ? rowMax[y] - rowMin[y] + 1 : 0;
-      if (rw >= umbral) break;
-      y++;
-    }
-    if (y > minY) {
-      minY = y;
-      minX = w; maxX = 0;
-      for (let yy = minY; yy <= maxY; yy++) {
-        if (rowMax[yy] >= 0) {
-          if (rowMin[yy] < minX) minX = rowMin[yy];
-          if (rowMax[yy] > maxX) maxX = rowMax[yy];
-        }
-      }
-    }
+    while (y < tope && f.rowCount[y] < umbral) y++;
+    minY = y;
   }
+  // Recorte manual extra desde arriba.
+  if (topCrop > 0) minY = Math.min(maxY - 1, minY + Math.round((maxY - minY) * topCrop));
+
+  // Bordes horizontales sobre las filas que quedan.
+  let minX = f.w, maxX = 0;
+  for (let y = minY; y <= maxY; y++) {
+    if (f.rowMax[y] >= 0) { if (f.rowMin[y] < minX) minX = f.rowMin[y]; if (f.rowMax[y] > maxX) maxX = f.rowMax[y]; }
+  }
+  if (maxX < minX) { minX = 0; maxX = f.w - 1; }
 
   const recW = Math.max(1, maxX - minX + 1);
   const recH = Math.max(1, maxY - minY + 1);
   const out = document.createElement("canvas");
   out.width = out.height = size;
   const octx = out.getContext("2d");
-
-  // Escala para que la prenda ocupe (1 - 2*margen) del cuadro, manteniendo proporción.
   const disp = size * (1 - margen * 2);
   const escala = Math.min(disp / recW, disp / recH);
-  const dw = recW * escala;
-  const dh = recH * escala;
-  const dx = (size - dw) / 2;
-  const dy = (size - dh) / 2;
+  const dw = recW * escala, dh = recH * escala;
+  const dx = (size - dw) / 2, dy = (size - dh) / 2;
   octx.imageSmoothingQuality = "high";
   octx.drawImage(canvas, minX, minY, recW, recH, dx, dy, dw, dh);
   return out;

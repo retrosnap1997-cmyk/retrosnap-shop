@@ -16,15 +16,16 @@ const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
 
 // Etiqueta de versión visible (para confirmar que NO estás viendo caché viejo).
-const VERSION = "v10 · auto-percha + modelo full";
+const VERSION = "v11 · percha por densidad + slider";
 
 // ---------- Estado del flujo de captura (multi-foto) ----------
 const flujo = {
   modo: "colgada",
   capturas: [],        // Blobs originales (varias fotos de la MISMA prenda)
-  recortes: [],        // canvas recortados (transparentes), en paralelo a capturas
+  recortes: [],        // canvas recortados CRUDOS (transparentes), paralelo a capturas
   cover: 0,            // índice de la foto principal
   fondo: "blanco",     // "blanco" | "#rrggbb" | "transparente" | "tpl:<id>"
+  topCrop: 0,          // recorte manual extra desde arriba (0..0.45)
   motor: null,
 };
 
@@ -192,6 +193,9 @@ async function procesarRecorteBatch() {
   $("#btn-a-ficha").disabled = true;
   flujo.recortes = [];
   flujo.cover = 0;
+  flujo.topCrop = 0;
+  const tc = $("#top-crop"); if (tc) tc.value = 0;
+  const tv = $("#topcrop-val"); if (tv) tv.textContent = "0%";
 
   const N = flujo.capturas.length;
   let algunIA = false, algunOff = false;
@@ -237,14 +241,15 @@ function renderRecorteGrid() {
   });
 }
 
-function pintarThumb(canvas, recorteCanvas, templateImg, caja) {
+function pintarThumb(canvas, recorteCrudo, templateImg, caja) {
   const size = 600;
   canvas.width = canvas.height = size;
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, size, size);
+  const framed = Cut.enmarcar(recorteCrudo, { size, topCrop: flujo.topCrop });
   if (!templateImg && flujo.fondo === "transparente") pintarDamero(ctx, size);
   else Cut.dibujarFondo(ctx, size, { fondo: flujo.fondo, templateImg });
-  Cut.colocarPrenda(ctx, size, recorteCanvas, caja);
+  Cut.colocarPrenda(ctx, size, framed, caja);
 }
 
 function renderFondos() {
@@ -329,7 +334,8 @@ async function guardarPrenda() {
     const orden = [flujo.cover, ...flujo.recortes.map((_, i) => i).filter((i) => i !== flujo.cover)];
     const fotosFinalBlobs = [];
     for (const i of orden) {
-      fotosFinalBlobs.push(await Cut.componer(flujo.recortes[i], { fondo: flujo.fondo, templateImg, caja }));
+      const framed = Cut.enmarcar(flujo.recortes[i], { size: 1600, topCrop: flujo.topCrop });
+      fotosFinalBlobs.push(await Cut.componer(framed, { fondo: flujo.fondo, templateImg, caja }));
     }
 
     const prenda = {
@@ -383,6 +389,7 @@ function resetFlujo() {
   flujo.capturas = [];
   flujo.recortes = [];
   flujo.cover = 0;
+  flujo.topCrop = 0;
   flujo.motor = null;
 }
 
@@ -507,6 +514,13 @@ function bind() {
     }
     const thumb = e.target.closest(".recorte-thumb");
     if (thumb) { flujo.cover = +thumb.dataset.i; renderRecorteGrid(); }
+  });
+
+  // Recorte manual desde arriba (saca clips/percha que la IA dejó)
+  $("#top-crop").addEventListener("input", (e) => {
+    flujo.topCrop = (+e.target.value) / 100;
+    $("#topcrop-val").textContent = e.target.value + "%";
+    renderRecorteGrid();
   });
 
   $("#btn-rehacer").addEventListener("click", () => { resetFlujo(); ir("capturar"); });

@@ -123,6 +123,10 @@ body {
 .thumb-cover { position: absolute; left: 6px; bottom: 6px; background: var(--coral); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
 .thumb-del { position: absolute; top: 6px; right: 6px; background: rgba(255,255,255,.92); border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 13px; cursor: pointer; }
 .recorte-ayuda { font-size: 12.5px; color: var(--gris); margin: 12px 0 0; }
+.cortar-arriba { margin-top: 14px; }
+.ca-label { font-size: 13px; font-weight: 600; color: var(--gris); }
+.ca-label b { color: var(--coral); }
+#top-crop { width: 100%; margin-top: 6px; accent-color: var(--coral); }
 .spinner { width: 42px; height: 42px; border: 4px solid var(--linea); border-top-color: var(--coral); border-radius: 50%; animation: girar .9s linear infinite; }
 @keyframes girar { to { transform: rotate(360deg); } }
 #recorte-msg { font-weight: 600; margin: 0; text-align: center; }
