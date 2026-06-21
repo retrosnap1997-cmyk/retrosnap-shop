@@ -26,7 +26,7 @@ const IMGLY_CONFIG = {
   // Datos del modelo desde el CDN OFICIAL de imgly (la versión coincide con la
   // librería). Se descargan la 1ª vez (~40 MB) y quedan cacheados por el navegador.
   publicPath: "https://staticimgly.com/@imgly/background-removal-data/1.5.5/dist/",
-  model: "isnet_fp16",            // buen balance calidad/peso para teléfono
+  model: "isnet",                 // máxima calidad de bordes (más pesado pero más fino)
   output: { format: "image/png" },
 };
 
@@ -114,29 +114,69 @@ async function blobACanvas(blob) {
   return c;
 }
 
-// Auto-recuadre: detecta el rectángulo de píxeles visibles (alpha>umbral),
-// lo recorta con un margen y lo centra en un canvas cuadrado de 'size'.
-function autoRecuadre(canvas, { size = 1600, margen = 0.08 } = {}) {
+// Auto-recuadre: detecta el rectángulo de la prenda, le RECORTA el gancho de la
+// percha (la "tira finita" de arriba) y la centra en un canvas cuadrado de 'size'.
+function autoRecuadre(canvas, { size = 1600, margen = 0.08, recortarColgador = true } = {}) {
   const ctx = canvas.getContext("2d");
   const { width: w, height: h } = canvas;
   const data = ctx.getImageData(0, 0, w, h).data;
 
+  // Bounding box + ancho de la prenda a cada altura (min/max X por fila).
+  const rowMin = new Int32Array(h).fill(w);
+  const rowMax = new Int32Array(h).fill(-1);
   let minX = w, minY = h, maxX = 0, maxY = 0, hay = false;
   for (let y = 0; y < h; y++) {
+    const base = y * w;
+    let rmin = w, rmax = -1;
     for (let x = 0; x < w; x++) {
-      if (data[(y * w + x) * 4 + 3] > 24) {
-        hay = true;
-        if (x < minX) minX = x;
-        if (x > maxX) maxX = x;
-        if (y < minY) minY = y;
-        if (y > maxY) maxY = y;
+      if (data[(base + x) * 4 + 3] > 24) {
+        if (x < rmin) rmin = x;
+        if (x > rmax) rmax = x;
       }
+    }
+    rowMin[y] = rmin; rowMax[y] = rmax;
+    if (rmax >= 0) {
+      hay = true;
+      if (rmin < minX) minX = rmin;
+      if (rmax > maxX) maxX = rmax;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
     }
   }
   if (!hay) { minX = 0; minY = 0; maxX = w - 1; maxY = h - 1; }
 
-  const recW = maxX - minX + 1;
-  const recH = maxY - minY + 1;
+  // Ancho máximo del cuerpo de la prenda.
+  let maxRowW = 1;
+  for (let y = minY; y <= maxY; y++) {
+    const rw = rowMax[y] >= 0 ? rowMax[y] - rowMin[y] + 1 : 0;
+    if (rw > maxRowW) maxRowW = rw;
+  }
+
+  // Recortar el gancho: saltar desde arriba las filas "finitas" hasta que
+  // empieza el cuerpo (más del 18% del ancho máximo). Tope: 35% del alto.
+  if (recortarColgador && maxRowW > 1) {
+    const umbral = maxRowW * 0.18;
+    const tope = minY + (maxY - minY) * 0.35;
+    let y = minY;
+    while (y < tope) {
+      const rw = rowMax[y] >= 0 ? rowMax[y] - rowMin[y] + 1 : 0;
+      if (rw >= umbral) break;
+      y++;
+    }
+    if (y > minY) {
+      minY = y;
+      minX = w; maxX = 0;
+      for (let yy = minY; yy <= maxY; yy++) {
+        if (rowMax[yy] >= 0) {
+          if (rowMin[yy] < minX) minX = rowMin[yy];
+          if (rowMax[yy] > maxX) maxX = rowMax[yy];
+        }
+      }
+    }
+  }
+
+  const recW = Math.max(1, maxX - minX + 1);
+  const recH = Math.max(1, maxY - minY + 1);
   const out = document.createElement("canvas");
   out.width = out.height = size;
   const octx = out.getContext("2d");

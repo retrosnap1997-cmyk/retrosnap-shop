@@ -5,7 +5,7 @@
 //  el navegador por separado la primera vez.
 // ============================================================
 
-const CACHE = "rs-studio-v8";
+const CACHE = "rs-studio-v9";
 const SHELL = [
   "./",
   "./index.html",
