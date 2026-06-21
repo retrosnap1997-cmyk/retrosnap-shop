@@ -5,7 +5,7 @@
 //  el navegador por separado la primera vez.
 // ============================================================
 
-const CACHE = "rs-studio-v6";
+const CACHE = "rs-studio-v7";
 const SHELL = [
   "./",
   "./index.html",
@@ -42,21 +42,20 @@ self.addEventListener("activate", (e) => {
 });
 
 self.addEventListener("fetch", (e) => {
-  const url = new URL(e.request.url);
+  const req = e.request;
+  const url = new URL(req.url);
   // Solo manejamos nuestros propios archivos (mismo origen).
-  if (url.origin !== self.location.origin) return;
+  if (url.origin !== self.location.origin || req.method !== "GET") return;
 
+  // NETWORK-FIRST: si hay internet, siempre traemos lo último y lo cacheamos.
+  // Si no hay señal, caemos a lo guardado (la app sigue andando offline).
   e.respondWith(
-    caches.match(e.request).then((cacheado) => {
-      if (cacheado) return cacheado;
-      return fetch(e.request).then((resp) => {
-        // Guardamos en cache lo que vamos pidiendo del propio sitio.
-        if (resp.ok && e.request.method === "GET") {
-          const copia = resp.clone();
-          caches.open(CACHE).then((c) => c.put(e.request, copia));
-        }
-        return resp;
-      }).catch(() => cacheado);
-    })
+    fetch(req).then((resp) => {
+      if (resp.ok) {
+        const copia = resp.clone();
+        caches.open(CACHE).then((c) => c.put(req, copia));
+      }
+      return resp;
+    }).catch(() => caches.match(req))
   );
 });
