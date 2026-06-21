@@ -23,9 +23,10 @@ async function cargarImgly() {
 }
 
 const IMGLY_CONFIG = {
-  // Recursos del modelo servidos desde CDN (se cachean tras la 1ª vez).
-  publicPath: "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/dist/",
-  model: "isnet",                 // calidad alta (isnet > isnet_fp16 > isnet_quint8)
+  // Datos del modelo desde el CDN OFICIAL de imgly (la versión coincide con la
+  // librería). Se descargan la 1ª vez (~40 MB) y quedan cacheados por el navegador.
+  publicPath: "https://staticimgly.com/@imgly/background-removal-data/1.5.5/dist/",
+  model: "isnet_fp16",            // buen balance calidad/peso para teléfono
   output: { format: "image/png" },
 };
 

@@ -432,6 +432,17 @@ function bind() {
   // Disparador
   $("#btn-shutter").addEventListener("click", sacarFoto);
 
+  // Subir foto desde la galería (mismo flujo de recorte que la cámara)
+  $("#btn-galeria").addEventListener("click", () => $("#file-galeria").click());
+  $("#file-galeria").addEventListener("change", (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    flujo.capturaBlob = f;
+    e.target.value = "";        // permite re-elegir la misma foto
+    ir("recorte");
+    procesarRecorte();
+  });
+
   // Recorte: fondos
   $(".fondos").addEventListener("click", (e) => {
     const chip = e.target.closest("[data-fondo]");
